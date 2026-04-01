@@ -1,9 +1,16 @@
+using LogiPulse.Infrastructure.Persistance;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
+
+var connectionString = builder.Configuration.GetConnectionString("LogiPulseDatabase");
+
+builder.Services.AddDbContext<LogiPulseDbContext>(options => options.UseNpgsql(connectionString));
 
 var app = builder.Build();
 
