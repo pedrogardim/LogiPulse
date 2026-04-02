@@ -33,11 +33,15 @@ public class Product : ProductRuleStore
         CategoryId = categoryId;
     }
 
-    public static Product Create(string externalId, string code, string name, Guid? categoryId)
+    public static Product Create(string externalId, string code, string name, Guid? categoryId = null)
     {
         var id = Guid.CreateVersion7();
         var tenantId = Guid.CreateVersion7(); // TODO: Tenant Logic
 
-        return new Product(id, tenantId, externalId, code, name, categoryId);
+        var product = new Product(id, tenantId, externalId, code, name, categoryId);
+
+        product.SetRule("TEMP", "C", 2, 3.4444m);
+        
+        return product;
     }
 }
