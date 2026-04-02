@@ -1,0 +1,43 @@
+using LogiPulse.Domain.Base;
+
+namespace LogiPulse.Domain.Entities.Product;
+
+public class Product : ProductRuleStore
+{
+    public Guid TenantId { get; private set; }
+    public string ExternalId { get; private set; }
+
+    public Guid? CategoryId { get; private set; }
+    public virtual ProductCategory? Category { get; private set; }
+
+    public string Name { get; private set; }
+    public string Code { get; private set; }
+
+    public Product()
+    {
+    }
+
+    private Product(
+        Guid id,
+        Guid tenantId,
+        string externalId, 
+        string code, 
+        string name, 
+        Guid? categoryId
+    ) : base(id)
+    {
+        TenantId = tenantId;
+        ExternalId = externalId;
+        Code = code;
+        Name = name;
+        CategoryId = categoryId;
+    }
+
+    public static Product Create(string externalId, string code, string name, Guid? categoryId)
+    {
+        var id = Guid.CreateVersion7();
+        var tenantId = Guid.CreateVersion7(); // TODO: Tenant Logic
+
+        return new Product(id, tenantId, externalId, code, name, categoryId);
+    }
+}

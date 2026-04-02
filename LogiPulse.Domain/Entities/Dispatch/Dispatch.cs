@@ -16,11 +16,7 @@ public class Dispatch : Entity
     {
     }
 
-    private Dispatch(
-        Guid id,
-        Guid tenantId,
-        string externalId
-    ) : base(id)
+    private Dispatch(Guid id, Guid tenantId, string externalId) : base(id)
     {
         TenantId = tenantId;
         ExternalId = externalId;
@@ -29,11 +25,9 @@ public class Dispatch : Entity
     public static Dispatch Create(string externalId)
     {
         var id = Guid.CreateVersion7();
-        // TODO: Tenant Logic
-        var tenantId = Guid.CreateVersion7();
+        var tenantId = Guid.CreateVersion7(); // TODO: Tenant Logic
 
         var dispatch = new Dispatch(id, tenantId, externalId);
-
         dispatch.ChangeStatus(DispatchStatus.Created);
 
         return dispatch;
