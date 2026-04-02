@@ -10,4 +10,9 @@ public class LogiPulseDbContext(DbContextOptions<LogiPulseDbContext> options) : 
     public virtual DbSet<Dispatch> Dispatches { get; set; }
     public virtual DbSet<Product> Products { get; set; }
     public virtual DbSet<ProductCategory> ProductCategories { get; set; }
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(LogiPulseDbContext).Assembly);
+    }
 }
