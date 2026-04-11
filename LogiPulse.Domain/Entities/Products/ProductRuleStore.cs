@@ -1,6 +1,6 @@
 using LogiPulse.Domain.Base;
 
-namespace LogiPulse.Domain.Entities.Product;
+namespace LogiPulse.Domain.Entities.Products;
 
 public abstract class ProductRuleStore : Entity
 {

@@ -1,6 +1,6 @@
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Mvc;
-using LogiPulse.Domain.Entities.Dispatch;
+using LogiPulse.Domain.Entities.Dispatches;
 
 namespace LogiPulse.Api.Controllers;
 

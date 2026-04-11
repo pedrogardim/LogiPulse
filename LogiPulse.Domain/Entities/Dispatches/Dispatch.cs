@@ -1,7 +1,7 @@
 using System.Security.Cryptography;
 using LogiPulse.Domain.Base;
 
-namespace LogiPulse.Domain.Entities.Dispatch;
+namespace LogiPulse.Domain.Entities.Dispatches;
 
 public class Dispatch : Entity
 {

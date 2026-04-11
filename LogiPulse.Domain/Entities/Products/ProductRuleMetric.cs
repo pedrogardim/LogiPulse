@@ -1,4 +1,4 @@
-namespace LogiPulse.Domain.Entities.Product;
+namespace LogiPulse.Domain.Entities.Products;
 public record ProductRuleMetric(string Code)
 {
     public static readonly ProductRuleMetric Temperature = new("TEMP");

@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using LogiPulse.Domain.Entities.Dispatch;
-using LogiPulse.Domain.Entities.Product;
+using LogiPulse.Domain.Entities.Dispatches;
+using LogiPulse.Domain.Entities.Products;
 
 namespace LogiPulse.Infrastructure.Persistance;
 

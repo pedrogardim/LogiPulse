@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using LogiPulse.Domain.Entities.Product;
+using LogiPulse.Domain.Entities.Products;
 
 namespace LogiPulse.Infrastructure.Persistance.Configurations;
 

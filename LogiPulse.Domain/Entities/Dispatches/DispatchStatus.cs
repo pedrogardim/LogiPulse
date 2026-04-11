@@ -1,4 +1,4 @@
-namespace LogiPulse.Domain.Entities.Dispatch;
+namespace LogiPulse.Domain.Entities.Dispatches;
 
 public enum DispatchStatus
 {
