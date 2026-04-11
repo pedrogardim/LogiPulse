@@ -3,7 +3,6 @@ using System;
 using LogiPulse.Infrastructure.Persistance;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,11 +11,9 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LogiPulse.Infrastructure.Migrations
 {
     [DbContext(typeof(LogiPulseDbContext))]
-    [Migration("20260411192418_AddTenant")]
-    partial class AddTenant
+    partial class LogiPulseDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -29,36 +26,48 @@ namespace LogiPulse.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at_utc");
 
                     b.Property<string>("CurrentStatus")
                         .IsRequired()
                         .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
+                        .HasColumnType("character varying(30)")
+                        .HasColumnName("current_status");
 
                     b.Property<string>("ExternalId")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("external_id");
 
                     b.Property<Guid>("ProductId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("product_id");
 
                     b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("tenant_id");
 
-                    b.Property<Guid>("TenantId1")
-                        .HasColumnType("uuid");
+                    b.Property<DateTime>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at_utc");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_dispatches");
 
-                    b.HasIndex("ProductId");
+                    b.HasIndex("ProductId")
+                        .HasDatabaseName("ix_dispatches_product_id");
 
-                    b.HasIndex("TenantId");
-
-                    b.HasIndex("TenantId1");
+                    b.HasIndex("TenantId")
+                        .HasDatabaseName("ix_dispatches_tenant_id");
 
                     b.HasIndex("ExternalId", "TenantId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasDatabaseName("ix_dispatches_external_id_tenant_id");
 
                     b.ToTable("dispatches", (string)null);
                 });
@@ -67,42 +76,56 @@ namespace LogiPulse.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<Guid?>("CategoryId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("category_id");
 
                     b.Property<string>("Code")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("code");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at_utc");
 
                     b.Property<string>("ExternalId")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("external_id");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("name");
 
                     b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("tenant_id");
 
-                    b.Property<Guid>("TenantId1")
-                        .HasColumnType("uuid");
+                    b.Property<DateTime>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at_utc");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_products");
 
-                    b.HasIndex("CategoryId");
+                    b.HasIndex("CategoryId")
+                        .HasDatabaseName("ix_products_category_id");
 
-                    b.HasIndex("TenantId");
-
-                    b.HasIndex("TenantId1");
+                    b.HasIndex("TenantId")
+                        .HasDatabaseName("ix_products_tenant_id");
 
                     b.HasIndex("Code", "TenantId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasDatabaseName("ix_products_code_tenant_id");
 
                     b.HasIndex("ExternalId", "TenantId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasDatabaseName("ix_products_external_id_tenant_id");
 
                     b.ToTable("products", (string)null);
                 });
@@ -111,25 +134,40 @@ namespace LogiPulse.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at_utc");
 
                     b.Property<string>("ExternalId")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("external_id");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("name");
 
                     b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("tenant_id");
 
-                    b.HasKey("Id");
+                    b.Property<DateTime>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at_utc");
 
-                    b.HasIndex("TenantId");
+                    b.HasKey("Id")
+                        .HasName("pk_product_categories");
+
+                    b.HasIndex("TenantId")
+                        .HasDatabaseName("ix_product_categories_tenant_id");
 
                     b.HasIndex("ExternalId", "TenantId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasDatabaseName("ix_product_categories_external_id_tenant_id");
 
                     b.ToTable("product_categories", (string)null);
                 });
@@ -138,26 +176,40 @@ namespace LogiPulse.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at_utc");
 
                     b.Property<string>("DisplayName")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("display_name");
 
                     b.Property<string>("LegalName")
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("legal_name");
 
                     b.Property<string>("TaxCode")
                         .IsRequired()
                         .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
+                        .HasColumnType("character varying(30)")
+                        .HasColumnName("tax_code");
 
-                    b.HasKey("Id");
+                    b.Property<DateTime>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at_utc");
+
+                    b.HasKey("Id")
+                        .HasName("pk_tenants");
 
                     b.HasIndex("TaxCode")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasDatabaseName("ix_tenants_tax_code");
 
                     b.ToTable("tenants", (string)null);
                 });
@@ -168,19 +220,15 @@ namespace LogiPulse.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_dispatches_products_product_id");
 
                     b.HasOne("LogiPulse.Domain.Entities.Tenants.Tenant", null)
                         .WithMany("Dispatches")
                         .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("LogiPulse.Domain.Entities.Tenants.Tenant", "Tenant")
-                        .WithMany()
-                        .HasForeignKey("TenantId1")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_dispatches_tenants_tenant_id");
 
                     b.OwnsMany("LogiPulse.Domain.Entities.Dispatches.DispatchStatusTransition", "StatusHistory", b1 =>
                         {
@@ -201,18 +249,17 @@ namespace LogiPulse.Infrastructure.Migrations
                             b1.ToTable("dispatches");
 
                             b1
-                                .ToJson("StatusHistory")
+                                .ToJson("status_history")
                                 .HasColumnType("jsonb");
 
                             b1.WithOwner()
-                                .HasForeignKey("DispatchId");
+                                .HasForeignKey("DispatchId")
+                                .HasConstraintName("fk_dispatches_dispatches_dispatch_id");
                         });
 
                     b.Navigation("Product");
 
                     b.Navigation("StatusHistory");
-
-                    b.Navigation("Tenant");
                 });
 
             modelBuilder.Entity("LogiPulse.Domain.Entities.Products.Product", b =>
@@ -220,19 +267,15 @@ namespace LogiPulse.Infrastructure.Migrations
                     b.HasOne("LogiPulse.Domain.Entities.Products.ProductCategory", "Category")
                         .WithMany()
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_products_product_categories_category_id");
 
                     b.HasOne("LogiPulse.Domain.Entities.Tenants.Tenant", null)
                         .WithMany("Products")
                         .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("LogiPulse.Domain.Entities.Tenants.Tenant", "Tenant")
-                        .WithMany()
-                        .HasForeignKey("TenantId1")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_products_tenants_tenant_id");
 
                     b.OwnsMany("LogiPulse.Domain.Entities.Products.ProductRule", "Rules", b1 =>
                         {
@@ -251,23 +294,23 @@ namespace LogiPulse.Infrastructure.Migrations
                             b1.Property<string>("Unit")
                                 .IsRequired();
 
-                            b1.HasKey("ProductId", "__synthesizedOrdinal");
+                            b1.HasKey("ProductId", "__synthesizedOrdinal")
+                                .HasName("pk_products");
 
                             b1.ToTable("products");
 
                             b1
-                                .ToJson("Rules")
+                                .ToJson("rules")
                                 .HasColumnType("jsonb");
 
                             b1.WithOwner()
-                                .HasForeignKey("ProductId");
+                                .HasForeignKey("ProductId")
+                                .HasConstraintName("fk_products_products_product_id");
                         });
 
                     b.Navigation("Category");
 
                     b.Navigation("Rules");
-
-                    b.Navigation("Tenant");
                 });
 
             modelBuilder.Entity("LogiPulse.Domain.Entities.Products.ProductCategory", b =>
@@ -276,7 +319,8 @@ namespace LogiPulse.Infrastructure.Migrations
                         .WithMany("ProductCategories")
                         .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_product_categories_tenants_tenant_id");
 
                     b.OwnsMany("LogiPulse.Domain.Entities.Products.ProductRule", "Rules", b1 =>
                         {
@@ -300,11 +344,12 @@ namespace LogiPulse.Infrastructure.Migrations
                             b1.ToTable("product_categories");
 
                             b1
-                                .ToJson("Rules")
+                                .ToJson("rules")
                                 .HasColumnType("jsonb");
 
                             b1.WithOwner()
-                                .HasForeignKey("ProductCategoryId");
+                                .HasForeignKey("ProductCategoryId")
+                                .HasConstraintName("fk_product_categories_product_categories_product_category_id");
                         });
 
                     b.Navigation("Rules");
