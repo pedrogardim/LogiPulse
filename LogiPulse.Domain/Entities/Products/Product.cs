@@ -1,5 +1,3 @@
-using LogiPulse.Domain.Base;
-
 namespace LogiPulse.Domain.Entities.Products;
 
 public class Product : ProductRuleStore

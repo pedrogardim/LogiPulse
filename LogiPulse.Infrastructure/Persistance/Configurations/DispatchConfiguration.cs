@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using LogiPulse.Domain.Entities.Dispatches;
+using LogiPulse.Domain.Entities.Tenants;
 
 namespace LogiPulse.Infrastructure.Persistance.Configurations;
 
@@ -21,7 +22,11 @@ public class DispatchConfiguration : IEntityTypeConfiguration<Dispatch>
             history.Property(h => h.Status).HasConversion<string>();
         });
 
-        // Índices
+        builder.HasOne<Tenant>()
+            .WithMany(t => t.Dispatches)
+            .HasForeignKey(x => x.TenantId)
+            .OnDelete(DeleteBehavior.Restrict);
+        
         builder.HasIndex(x => new { x.ExternalId, x.TenantId }).IsUnique();
     }
 }

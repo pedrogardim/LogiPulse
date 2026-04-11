@@ -1,33 +1,40 @@
 using System.Security.Cryptography;
 using LogiPulse.Domain.Base;
+using LogiPulse.Domain.Entities.Products;
+using LogiPulse.Domain.Entities.Tenants;
 
 namespace LogiPulse.Domain.Entities.Dispatches;
 
 public class Dispatch : Entity
 {
     public Guid TenantId { get; private set; }
+    
     public string ExternalId { get; private set; }
+    
+    public Guid ProductId { get; private set; }
+    public virtual Product Product { get; private set; }
+    
     public DispatchStatus CurrentStatus { get; private set; }
 
-    private readonly List<DispatchStatusTransition> _statusHistory = new();
+    private readonly List<DispatchStatusTransition> _statusHistory = [];
     public IReadOnlyCollection<DispatchStatusTransition> StatusHistory => _statusHistory.AsReadOnly();
 
     protected Dispatch()
     {
     }
 
-    private Dispatch(Guid id, Guid tenantId, string externalId) : base(id)
+    private Dispatch(Guid id, Guid tenantId, string externalId, Product product) : base(id)
     {
         TenantId = tenantId;
         ExternalId = externalId;
+        ProductId = product.Id;
+        Product = product;
     }
 
-    public static Dispatch Create(string externalId)
+    public static Dispatch Create(string externalId, Product product)
     {
         var id = Guid.CreateVersion7();
-        var tenantId = Guid.CreateVersion7(); // TODO: Tenant Logic
-
-        var dispatch = new Dispatch(id, tenantId, externalId);
+        var dispatch = new Dispatch(id, product.TenantId, externalId, product);
         dispatch.ChangeStatus(DispatchStatus.Created);
 
         return dispatch;

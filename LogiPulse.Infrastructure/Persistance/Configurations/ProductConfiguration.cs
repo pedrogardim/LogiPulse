@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using LogiPulse.Domain.Entities.Products;
+using LogiPulse.Domain.Entities.Tenants;
 
 namespace LogiPulse.Infrastructure.Persistance.Configurations;
 
@@ -22,6 +23,11 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
         builder.HasOne(x => x.Category)
             .WithMany()
             .HasForeignKey(x => x.CategoryId)
+            .OnDelete(DeleteBehavior.Restrict);
+        
+        builder.HasOne<Tenant>()
+            .WithMany(t => t.Products)
+            .HasForeignKey(x => x.TenantId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }
