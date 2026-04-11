@@ -1,8 +1,11 @@
 namespace LogiPulse.Domain.Base;
 
-public abstract class Entity
+public abstract class Entity : IHasTimestamps
 {
     public Guid Id { get; private init; }
+
+    public DateTime CreatedAtUtc { get; set; }
+    public DateTime UpdatedAtUtc { get; set; }
 
     protected Entity()
     {

@@ -1,4 +1,5 @@
 using LogiPulse.Infrastructure.Persistance;
+using LogiPulse.Infrastructure.Persistance.Interceptors;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,7 +11,12 @@ builder.Services.AddControllers();
 
 var connectionString = builder.Configuration.GetConnectionString("LogiPulseDatabase");
 
-builder.Services.AddDbContext<LogiPulseDbContext>(options => options.UseNpgsql(connectionString));
+builder.Services.AddDbContext<LogiPulseDbContext>((sp, options) =>
+{
+    options.UseNpgsql(connectionString)
+        .UseSnakeCaseNamingConvention()
+        .AddInterceptors(new UpdateTimestampsInterceptor());
+});
 
 var app = builder.Build();
 
