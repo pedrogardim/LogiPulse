@@ -1,7 +1,6 @@
-using System.Security.Cryptography;
 using Microsoft.AspNetCore.Mvc;
-using LogiPulse.Domain.Entities.Dispatches;
-using LogiPulse.Domain.Entities.Products;
+using LogiPulse.Infrastructure.Persistance;
+using Microsoft.EntityFrameworkCore;
 
 namespace LogiPulse.Api.Controllers;
 
@@ -9,14 +8,22 @@ namespace LogiPulse.Api.Controllers;
 [Route("api/[controller]")]
 public class DispatchesController : ControllerBase
 {
-    // An action method that handles HTTP GET requests
+    private readonly LogiPulseDbContext _context;
+
+    public DispatchesController(LogiPulseDbContext dbContext)
+    {
+        _context = dbContext;
+    }
+
     [HttpGet]
     public IActionResult Get()
     {
-        var externalId = RandomNumberGenerator.GetHexString(16);
-        var productExternalId = RandomNumberGenerator.GetHexString(16);
-        var product = Product.Create(productExternalId, productExternalId, "Prod X");
-        
-        return Ok(Dispatch.Create(externalId, product)); // Returns an HTTP 200 OK status with a message
+        var dispatches = _context
+            .Dispatches
+            .Include(d => d.Product)
+            .Include(d => d.Product.Category)
+            .ToList();
+
+        return Ok(dispatches);
     }
 }

@@ -1,6 +1,6 @@
-using System.Security.Cryptography;
 using Microsoft.AspNetCore.Mvc;
-using LogiPulse.Domain.Entities.Products;
+using LogiPulse.Infrastructure.Persistance;
+using Microsoft.EntityFrameworkCore;
 
 namespace LogiPulse.Api.Controllers;
 
@@ -8,16 +8,22 @@ namespace LogiPulse.Api.Controllers;
 [Route("api/[controller]")]
 public class ProductsController : ControllerBase
 {
-    // An action method that handles HTTP GET requests
+    
+    private readonly LogiPulseDbContext _context;
+    
+    public ProductsController(LogiPulseDbContext dbContext)
+    {
+        _context = dbContext;
+    }
+    
     [HttpGet]
     public IActionResult Get()
     {
-        var extCategoryId = RandomNumberGenerator.GetHexString(16);
-        var category = ProductCategory.Create(extCategoryId, "Category");
+        var products = _context
+            .Products
+            .Include(p => p.Category)
+            .ToList();
 
-        var externalId = RandomNumberGenerator.GetHexString(16);
-        var code = RandomNumberGenerator.GetHexString(16);
-        
-        return Ok(Product.Create(externalId, code, "Demo Product", category.Id)); // Returns an HTTP 200 OK status with a message
+        return Ok(products);
     }
 }

@@ -1,3 +1,5 @@
+using LogiPulse.Domain.Entities.Tenants;
+
 namespace LogiPulse.Domain.Entities.Products;
 
 public class Product : ProductRuleStore
@@ -31,14 +33,10 @@ public class Product : ProductRuleStore
         CategoryId = categoryId;
     }
 
-    public static Product Create(string externalId, string code, string name, Guid? categoryId = null)
+    public static Product Create(Tenant tenant, string externalId, string code, string name, ProductCategory? category = null)
     {
         var id = Guid.CreateVersion7();
-        var tenantId = Guid.CreateVersion7(); // TODO: Tenant Logic
-
-        var product = new Product(id, tenantId, externalId, code, name, categoryId);
-
-        product.SetRule("TEMP", "C", 2, 3.4444m);
+        var product = new Product(id, tenant.Id, externalId, code, name, category?.Id);
         
         return product;
     }

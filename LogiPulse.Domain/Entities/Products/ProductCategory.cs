@@ -1,4 +1,5 @@
 using LogiPulse.Domain.Base;
+using LogiPulse.Domain.Entities.Tenants;
 
 namespace LogiPulse.Domain.Entities.Products;
 
@@ -20,11 +21,9 @@ public class ProductCategory : ProductRuleStore
         Name = name;
     }
     
-    public static ProductCategory Create(string externalId, string name)
+    public static ProductCategory Create(Tenant tenant, string externalId, string name)
     {
         var id = Guid.CreateVersion7();
-        var tenantId = Guid.CreateVersion7(); // TODO: Tenant Logic
-
-        return new ProductCategory(id, tenantId, externalId, name);
+        return new ProductCategory(id, tenant.Id, externalId, name);
     }
 }
