@@ -1,13 +1,23 @@
+using LogiPulse.Api;
+using LogiPulse.Api.Middlewares;
 using LogiPulse.Infrastructure.Persistance;
 using LogiPulse.Infrastructure.Persistance.Interceptors;
 using LogiPulse.Infrastructure.Persistance.Seeds;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
+
+builder.Services.AddAuthorization();
+
 builder.Services.AddControllers();
 
 var connectionString = builder.Configuration.GetConnectionString("LogiPulseDatabase");
@@ -18,6 +28,8 @@ builder.Services.AddDbContext<LogiPulseDbContext>((sp, options) =>
         .UseSnakeCaseNamingConvention()
         .AddInterceptors(new UpdateTimestampsInterceptor());
 });
+
+builder.Services.AddScoped<UserTenantMiddleware>();
 
 var app = builder.Build();
 
@@ -37,5 +49,7 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.UseHttpsRedirection();
+
+app.UseMiddleware<UserTenantMiddleware>();
 app.MapControllers();
 app.Run();
