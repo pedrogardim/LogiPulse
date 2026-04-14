@@ -1,6 +1,7 @@
 using System.Net;
 using System.Security.Claims;
 using System.Web;
+using LogiPulse.Api.Extensions;
 using LogiPulse.Domain.Entities.Users;
 using LogiPulse.Infrastructure.Persistance;
 
@@ -28,8 +29,8 @@ public class UserTenantMiddleware : IMiddleware
             return;
         }
 
-        var entraIdStr = context.User.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value;
-        var email = userClaims.Identity?.Name;
+        var entraIdStr = userClaims.GetObjectId();
+        var email = userClaims.GetEmail();
 
         // TODO: Create user
         // TODO: Put user on scoped context
