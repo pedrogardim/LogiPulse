@@ -1,6 +1,7 @@
 using LogiPulse.Domain.Base;
 using LogiPulse.Domain.Entities.Dispatches;
 using LogiPulse.Domain.Entities.Products;
+using LogiPulse.Domain.Entities.Users;
 
 namespace LogiPulse.Domain.Entities.Tenants;
 
@@ -15,6 +16,7 @@ public class Tenant : Entity
     public virtual List<Dispatch> Dispatches { get; } = [];
     public virtual List<Product> Products { get; } = [];
     public virtual List<ProductCategory> ProductCategories { get; } = [];
+    public virtual List<User> Users { get; } = [];
     
     protected Tenant()
     {
