@@ -9,10 +9,15 @@ namespace LogiPulse.Api.Controllers;
 public class DispatchesController : ControllerBase
 {
     private readonly LogiPulseDbContext _context;
+    // private readonly ICurrentUserService _userService;
 
-    public DispatchesController(LogiPulseDbContext dbContext)
+    public DispatchesController(
+        LogiPulseDbContext dbContext 
+        // ICurrentUserService userService
+        )
     {
         _context = dbContext;
+        // _userService = userService;
     }
 
     [HttpGet]

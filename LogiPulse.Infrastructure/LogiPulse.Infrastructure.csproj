@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LogiPulse.Domain\LogiPulse.Domain.csproj" />
+    <ProjectReference Include="..\LogiPulse.Application\LogiPulse.Application.csproj" />
   </ItemGroup>
 
   <ItemGroup>
