@@ -1,0 +1,34 @@
+using LogiPulse.Application.Interfaces;
+using LogiPulse.Domain.Entities.Users;
+
+namespace LogiPulse.Application.Users;
+
+public class UserService(IUserRepository userRepository, IUnitOfWork unitOfWork) : IUserService
+{
+    public async Task<User> AuthAsync(Guid entraId, string email)
+    {
+        // 1) Find by Azure Entra ID
+        var entraUser = await userRepository.GetByEntraIdAsync(entraId);
+
+        if (entraUser is not null)
+            return entraUser;
+
+        // 2) Check if the user was invited (user added by admin)
+        var user = await userRepository.GetByEmailAsync(email);
+
+        if (user is null)
+            throw new Exception("User has not been invited to LogiPulse"); // TODO: Custom exception
+
+        user.SetEntraId(entraId);
+        await unitOfWork.CommitAsync();
+        return user;
+    }
+
+    public async Task<User> InviteUser(Guid tenantId, string email, string fullName)
+    {
+        var user = User.Create(tenantId, email, fullName ?? email, null);
+        await userRepository.AddAsync(user);
+        await unitOfWork.CommitAsync();
+        return user;
+    }
+}

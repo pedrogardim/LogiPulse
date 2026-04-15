@@ -1,8 +1,12 @@
-using LogiPulse.Api;
 using LogiPulse.Api.Middlewares;
+using LogiPulse.Application.Interfaces;
+using LogiPulse.Application.Users;
+using LogiPulse.Domain.Entities.Users;
 using LogiPulse.Infrastructure.Persistance;
 using LogiPulse.Infrastructure.Persistance.Interceptors;
+using LogiPulse.Infrastructure.Persistance.Repositories;
 using LogiPulse.Infrastructure.Persistance.Seeds;
+using LogiPulse.Infrastructure.Persistance.UnitOfWork;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
@@ -30,6 +34,12 @@ builder.Services.AddDbContext<LogiPulseDbContext>((sp, options) =>
 });
 
 builder.Services.AddScoped<UserTenantMiddleware>();
+builder.Services.AddScoped<ErrorCatcherMiddleware>();
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
+
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 var app = builder.Build();
 
@@ -50,6 +60,7 @@ using (var scope = app.Services.CreateScope())
 
 app.UseHttpsRedirection();
 
+app.UseMiddleware<ErrorCatcherMiddleware>();
 app.UseMiddleware<UserTenantMiddleware>();
 app.MapControllers();
 app.Run();
