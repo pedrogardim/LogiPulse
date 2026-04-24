@@ -5,6 +5,7 @@ namespace LogiPulse.Api.Extensions;
 public static class ClaimsPrincipalExtensions
 {
     private const string OidClaimKey = "http://schemas.microsoft.com/identity/claims/objectidentifier";
+    private const string NameClaimKey = "name"; 
     
     extension(ClaimsPrincipal user)
     {
@@ -18,5 +19,12 @@ public static class ClaimsPrincipalExtensions
         {
             return user.Identity?.Name ?? string.Empty;
         }
+        
+        public string GetName()
+        {
+            return user.FindFirst(NameClaimKey)?.Value ?? user.GetEmail();
+        }
+
+
     }
 }

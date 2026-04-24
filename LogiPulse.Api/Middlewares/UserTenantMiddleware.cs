@@ -1,3 +1,4 @@
+using LogiPulse.Api.Attributes;
 using LogiPulse.Api.Extensions;
 using LogiPulse.Application.Interfaces;
 
@@ -9,16 +10,31 @@ public class UserTenantMiddleware(IUserService userService) : IMiddleware
     {
         var userClaims = context.User;
 
+        var endpoint = context.GetEndpoint();
+
+        var route = context.Request.Path.Value ?? string.Empty;
+        
+        if (route.StartsWith("/openapi"))
+        {
+            await next(context);
+            return;
+        }
+        
         if (userClaims.Identity?.IsAuthenticated != true)
             throw new UnauthorizedAccessException();
+
+        var bypassValidation = endpoint?.Metadata?.GetMetadata<BypassUserValidationAttribute>();
+
+        if (bypassValidation is not null)
+        {
+            await next(context);
+            return;
+        }
 
         var entraId = userClaims.GetObjectId();
         var email = userClaims.GetEmail();
 
         var user = await userService.AuthAsync(entraId, email);
-
-        // TODO: Create user
-        // TODO: Put user on scoped context
 
         await next(context);
     }

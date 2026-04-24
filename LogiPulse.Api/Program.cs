@@ -1,3 +1,5 @@
+using System.Net.NetworkInformation;
+using System.Text.Json.Serialization;
 using LogiPulse.Api.Middlewares;
 using LogiPulse.Application.Interfaces;
 using LogiPulse.Application.Tenants;
@@ -24,7 +26,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options => { options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles; });
 
 var connectionString = builder.Configuration.GetConnectionString("LogiPulseDatabase");
 
