@@ -1,5 +1,6 @@
 using LogiPulse.Application.Interfaces;
 using LogiPulse.Domain.Entities.Users;
+using LogiPulse.Domain.Exceptions;
 
 namespace LogiPulse.Application.Users;
 
@@ -17,7 +18,7 @@ public class UserService(IUserRepository userRepository, IUnitOfWork unitOfWork)
         var user = await userRepository.GetByEmailAsync(email);
 
         if (user is null)
-            throw new Exception("User has not been invited to LogiPulse"); // TODO: Custom exception
+            throw new BusinessRuleException("User has not been invited");
 
         user.SetEntraId(entraId);
         await unitOfWork.CommitAsync();

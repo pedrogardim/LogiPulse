@@ -1,3 +1,4 @@
+using LogiPulse.Domain.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LogiPulse.Api.Middlewares;
@@ -15,6 +16,8 @@ public class ErrorCatcherMiddleware : IMiddleware
             var (statusCode, message) = ex switch
             {
                 UnauthorizedAccessException => (StatusCodes.Status401Unauthorized, ex.Message),
+                ConflictException => (StatusCodes.Status409Conflict, ex.Message),
+                BusinessRuleException => (StatusCodes.Status422UnprocessableEntity, ex.Message),
                 _ => (StatusCodes.Status500InternalServerError, ex.Message != string.Empty ? ex.Message : "An error occurred")
             };
             
