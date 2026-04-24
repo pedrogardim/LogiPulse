@@ -1,0 +1,36 @@
+using LogiPulse.Application.Interfaces;
+using LogiPulse.Domain.Entities.Tenants;
+using LogiPulse.Domain.Entities.Users;
+using LogiPulse.Domain.Exceptions;
+using MediatR;
+
+namespace LogiPulse.Application.Tenants.Commands;
+
+public class RegisterTenantCommandHandler(
+    IUserRepository userRepository,
+    ITenantRepository tenantRepository,
+    IUnitOfWork unitOfWork
+) : IRequestHandler<RegisterTenantCommand, Guid>
+{
+    public async Task<Guid> Handle(RegisterTenantCommand request, CancellationToken cancellationToken)
+    {
+        var userExists = await userRepository.ExistsByEmailAsync(request.AdminUserEmail);
+        if (userExists)
+            throw new ConflictException("User already exists and belongs to a tenant");
+            
+        var tenant = Tenant.Create(request.DisplayName, request.TaxCode);
+        var adminUser = User.Create(
+            tenant.Id, 
+            request.AdminUserEmail, 
+            request.AdminUserName, 
+            request.AdminUserEntraId
+        );
+        
+        await tenantRepository.AddAsync(tenant);
+        await userRepository.AddAsync(adminUser);
+
+        await unitOfWork.CommitAsync(cancellationToken);
+
+        return tenant.Id;
+    }
+}

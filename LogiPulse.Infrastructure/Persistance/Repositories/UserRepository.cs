@@ -19,6 +19,11 @@ public class UserRepository(LogiPulseDbContext context) : IUserRepository
     {
         return await context.Users.FirstOrDefaultAsync(u => u.Email == email);
     }
+    
+    public async Task<bool> ExistsByEmailAsync(string email)
+    {
+        return await context.Users.AnyAsync(u => u.Email == email);
+    }
 
     public async Task AddAsync(User user)
     {

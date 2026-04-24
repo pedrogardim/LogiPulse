@@ -1,6 +1,8 @@
 using LogiPulse.Api.Middlewares;
 using LogiPulse.Application.Interfaces;
+using LogiPulse.Application.Tenants;
 using LogiPulse.Application.Users;
+using LogiPulse.Domain.Entities.Tenants;
 using LogiPulse.Domain.Entities.Users;
 using LogiPulse.Infrastructure.Persistance;
 using LogiPulse.Infrastructure.Persistance.Interceptors;
@@ -26,6 +28,10 @@ builder.Services.AddControllers();
 
 var connectionString = builder.Configuration.GetConnectionString("LogiPulseDatabase");
 
+builder.Services.AddMediatR(cfg =>
+    cfg.RegisterServicesFromAssembly(typeof(IUnitOfWork).Assembly)
+);
+
 builder.Services.AddDbContext<LogiPulseDbContext>((sp, options) =>
 {
     options.UseNpgsql(connectionString)
@@ -35,6 +41,8 @@ builder.Services.AddDbContext<LogiPulseDbContext>((sp, options) =>
 
 builder.Services.AddScoped<UserTenantMiddleware>();
 builder.Services.AddScoped<ErrorCatcherMiddleware>();
+
+builder.Services.AddScoped<ITenantRepository, TenantRepository>();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
