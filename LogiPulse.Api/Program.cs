@@ -37,7 +37,7 @@ builder.Services.AddMediatR(cfg =>
 
 builder.Services.AddDbContext<LogiPulseDbContext>((sp, options) =>
 {
-    options.UseNpgsql(connectionString)
+    options.UseNpgsql(connectionString, npgsqlOptions => { npgsqlOptions.UseNetTopologySuite(); })
         .UseSnakeCaseNamingConvention()
         .AddInterceptors(new UpdateTimestampsInterceptor());
 });

@@ -1,7 +1,10 @@
 using LogiPulse.Domain.Entities.Dispatches;
+using LogiPulse.Domain.Entities.Facilities;
 using LogiPulse.Domain.Entities.Products;
 using LogiPulse.Domain.Entities.Tenants;
+using LogiPulse.Domain.Shared;
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Geometries;
 
 namespace LogiPulse.Infrastructure.Persistance.Seeds;
 
@@ -29,13 +32,18 @@ public class DbInitializer
 
         product.SetRule("TILT", "DEG", -5, 5);
 
-        var dispatch = Dispatch.Create("D-001-003", product);
+        var facilityAddress = new Address("", "", "", "", "", "", "");
+
+        var facility = Facility.Create(tenant, "F-001", "Warehouse 01", "W-01", facilityAddress, new Point(0, 0));
+
+        var dispatch = Dispatch.Create("D-001-003", product, facility);
 
         context.Tenants.Add(tenant);
         context.Products.Add(product);
         context.ProductCategories.Add(productCategory);
         context.Dispatches.Add(dispatch);
-
+        context.Facilities.Add(facility);
+        
         await context.SaveChangesAsync();
     }
 }
