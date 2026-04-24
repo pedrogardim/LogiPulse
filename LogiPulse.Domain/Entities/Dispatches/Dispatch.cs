@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using LogiPulse.Domain.Base;
+using LogiPulse.Domain.Entities.Facilities;
 using LogiPulse.Domain.Entities.Products;
 using LogiPulse.Domain.Entities.Tenants;
 
@@ -18,25 +19,29 @@ public class Dispatch : Entity
 
     private readonly List<DispatchStatusTransition> _statusHistory = [];
     public IReadOnlyCollection<DispatchStatusTransition> StatusHistory => _statusHistory.AsReadOnly();
+    
+    public Guid FacilityId { get; private set; }
+    public virtual Facility Facility { get; private set; }
 
     protected Dispatch()
     {
     }
 
-    private Dispatch(Guid id, Guid tenantId, string externalId, Product product) : base(id)
+    private Dispatch(Guid id, Guid tenantId, string externalId, Product product, Facility facility) : base(id)
     {
         TenantId = tenantId;
         ExternalId = externalId;
         ProductId = product.Id;
         Product = product;
+        FacilityId = facility.Id;
+        Facility = facility;
     }
 
-    public static Dispatch Create(string externalId, Product product)
+    public static Dispatch Create(string externalId, Product product, Facility facility)
     {
         var id = Guid.CreateVersion7();
-        var dispatch = new Dispatch(id, product.TenantId, externalId, product);
+        var dispatch = new Dispatch(id, product.TenantId, externalId, product, facility);
         dispatch.ChangeStatus(DispatchStatus.Created);
-
         return dispatch;
     }
 
