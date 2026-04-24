@@ -14,6 +14,10 @@ public class RegisterTenantCommandHandler(
 {
     public async Task<Guid> Handle(RegisterTenantCommand request, CancellationToken cancellationToken)
     {
+        var tenantExists = await tenantRepository.ExistsByTaxCodeAsync(request.TaxCode);
+        if (tenantExists)
+            throw new ConflictException("Tenant already exists");
+
         var userExists = await userRepository.ExistsByEmailAsync(request.AdminUserEmail);
         if (userExists)
             throw new ConflictException("User already exists and belongs to a tenant");
