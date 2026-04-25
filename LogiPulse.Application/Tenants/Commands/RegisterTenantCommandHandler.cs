@@ -2,6 +2,7 @@ using LogiPulse.Application.Interfaces;
 using LogiPulse.Domain.Entities.Tenants;
 using LogiPulse.Domain.Entities.Users;
 using LogiPulse.Domain.Exceptions;
+using LogiPulse.Domain.Shared;
 using MediatR;
 
 namespace LogiPulse.Application.Tenants.Commands;
@@ -25,7 +26,7 @@ public class RegisterTenantCommandHandler(
         var tenant = Tenant.Create(request.DisplayName, request.TaxCode);
         var adminUser = User.Create(
             tenant.Id, 
-            request.AdminUserEmail, 
+            Email.Create(request.AdminUserEmail), 
             request.AdminUserName, 
             request.AdminUserEntraId
         );

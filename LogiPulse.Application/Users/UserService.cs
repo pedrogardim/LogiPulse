@@ -1,6 +1,7 @@
 using LogiPulse.Application.Interfaces;
 using LogiPulse.Domain.Entities.Users;
 using LogiPulse.Domain.Exceptions;
+using LogiPulse.Domain.Shared;
 
 namespace LogiPulse.Application.Users;
 
@@ -27,7 +28,7 @@ public class UserService(IUserRepository userRepository, IUnitOfWork unitOfWork)
 
     public async Task<User> InviteUser(Guid tenantId, string email, string fullName)
     {
-        var user = User.Create(tenantId, email, fullName ?? email, null);
+        var user = User.Create(tenantId, Email.Create(email), fullName ?? email, null);
         await userRepository.AddAsync(user);
         await unitOfWork.CommitAsync();
         return user;
