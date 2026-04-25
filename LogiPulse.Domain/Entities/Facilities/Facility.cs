@@ -15,12 +15,14 @@ public class Facility : Entity
 
     public string Name { get; private set; }
     public string Code { get; private set; }
+    public FacilityType Type { get; private set; }
 
     public Point Location { get; private set; }
 
     public Address Address { get; private set; }
     
-    public virtual List<Dispatch> Dispatches { get; } = [];
+    public virtual List<Dispatch> DestinyDispatches { get; } = [];
+    public virtual List<Dispatch> OriginDispatches { get; } = [];
 
     protected Facility()
     {
@@ -32,6 +34,7 @@ public class Facility : Entity
         string externalId,
         string name,
         string code,
+        FacilityType type,
         Address address,
         Point location) : base(id)
     {
@@ -41,6 +44,7 @@ public class Facility : Entity
         Code = code;
         Address = address;
         Location = location;
+        Type = type;
     }
 
     public static Facility Create(
@@ -48,11 +52,12 @@ public class Facility : Entity
         string externalId,
         string name,
         string code,
+        FacilityType type,
         Address address,
         Point location)
     {
         var id = Guid.CreateVersion7();
-        var facility = new Facility(id, tenant.Id, externalId, name, code, address, location);
+        var facility = new Facility(id, tenant.Id, externalId, name, code, type, address, location);
         return facility;
     }
 }

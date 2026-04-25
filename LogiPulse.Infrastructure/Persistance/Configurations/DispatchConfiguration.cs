@@ -27,9 +27,14 @@ public class DispatchConfiguration : IEntityTypeConfiguration<Dispatch>
             .HasForeignKey(x => x.TenantId)
             .OnDelete(DeleteBehavior.Restrict);
         
-        builder.HasOne(x => x.Facility)
-            .WithMany()
-            .HasForeignKey(x => x.FacilityId)
+        builder.HasOne(x => x.OriginFacility)
+            .WithMany(f => f.OriginDispatches)
+            .HasForeignKey(x => x.OriginFacilityId)
+            .OnDelete(DeleteBehavior.Restrict);
+        
+        builder.HasOne(x => x.DestinyFacility)
+            .WithMany(f => f.DestinyDispatches)
+            .HasForeignKey(x => x.DestinyFacilityId)
             .OnDelete(DeleteBehavior.Restrict);
         
         builder.HasIndex(x => new { x.ExternalId, x.TenantId }).IsUnique();

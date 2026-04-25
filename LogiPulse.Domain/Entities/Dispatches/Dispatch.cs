@@ -20,27 +20,32 @@ public class Dispatch : Entity
     private readonly List<DispatchStatusTransition> _statusHistory = [];
     public IReadOnlyCollection<DispatchStatusTransition> StatusHistory => _statusHistory.AsReadOnly();
     
-    public Guid FacilityId { get; private set; }
-    public virtual Facility Facility { get; private set; }
+    public Guid OriginFacilityId { get; private set; }
+    public virtual Facility OriginFacility { get; private set; }
+    
+    public Guid DestinyFacilityId { get; private set; }
+    public virtual Facility DestinyFacility { get; private set; }
 
     protected Dispatch()
     {
     }
 
-    private Dispatch(Guid id, Guid tenantId, string externalId, Product product, Facility facility) : base(id)
+    private Dispatch(Guid id, Guid tenantId, string externalId, Product product, Facility originFacility, Facility destinyFacility) : base(id)
     {
         TenantId = tenantId;
         ExternalId = externalId;
         ProductId = product.Id;
         Product = product;
-        FacilityId = facility.Id;
-        Facility = facility;
+        OriginFacilityId = originFacility.Id;
+        OriginFacility = originFacility;
+        DestinyFacilityId = destinyFacility.Id;
+        DestinyFacility = destinyFacility;
     }
 
-    public static Dispatch Create(string externalId, Product product, Facility facility)
+    public static Dispatch Create(string externalId, Product product, Facility originFacility, Facility destinyFacility)
     {
         var id = Guid.CreateVersion7();
-        var dispatch = new Dispatch(id, product.TenantId, externalId, product, facility);
+        var dispatch = new Dispatch(id, product.TenantId, externalId, product, originFacility, destinyFacility);
         dispatch.ChangeStatus(DispatchStatus.Created);
         return dispatch;
     }

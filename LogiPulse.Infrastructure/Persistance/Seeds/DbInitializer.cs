@@ -34,16 +34,47 @@ public class DbInitializer
 
         var facilityAddress = new Address("", "", "", "", "", "", "");
 
-        var facility = Facility.Create(tenant, "F-001", "Warehouse 01", "W-01", facilityAddress, new Point(0, 0));
+        var originAddr = new Address("Rod. Hélio Smidt", "s/n", "Guarulhos", "SP", "07190-100", "Brazil", "Aeroporto");
+        var dest1Addr = new Address("Av. Dr. Enéas Carvalho de Aguiar", "255", "São Paulo", "SP", "05403-000", "Brazil",
+            "Cerqueira César");
+        var dest2Addr = new Address("Rua Dr. Washington Pedro Lanzzelotti", "140", "Osasco", "SP", "06142-000",
+            "Brazil", "Jardim Novo Osasco");
 
-        var dispatch = Dispatch.Create("D-001-003", product, facility);
+        var facilityWarehouse = Facility.Create(
+            tenant,
+            "CD-GRU-01",
+            "CD Pfizer Guarulhos",
+            "CD-GRU",
+            FacilityType.DistributionCenter,
+            originAddr,
+            new Point(-46.473, -23.430) { SRID = 4326 });
+
+        var deliveryPoint1 = Facility.Create(
+            tenant,
+            "HOSP-HC-SP",
+            "Hospital das Clínicas SP",
+            "HC-SP",
+            FacilityType.DeliveryPoint,
+            dest1Addr,
+            new Point(-46.665, -23.557)  { SRID = 4326 });
+
+        var deliveryPoint2 = Facility.Create(
+            tenant,
+            "HOSP-MUNIC-OSZ",
+            "Hospital Municipal Osasco",
+            "HM-OSZ",
+            FacilityType.DeliveryPoint,
+            dest2Addr,
+            new Point(-46.789, -23.562)  { SRID = 4326 });
+
+        var dispatch = Dispatch.Create("D-001-003", product, facilityWarehouse, deliveryPoint1);
 
         context.Tenants.Add(tenant);
         context.Products.Add(product);
         context.ProductCategories.Add(productCategory);
         context.Dispatches.Add(dispatch);
-        context.Facilities.Add(facility);
-        
+        context.Facilities.AddRange(facilityWarehouse, deliveryPoint1, deliveryPoint2);
+
         await context.SaveChangesAsync();
     }
 }

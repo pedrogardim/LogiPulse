@@ -35,13 +35,5 @@ public class FacilityConfiguration : IEntityTypeConfiguration<Facility>
             .WithMany(t => t.Facilities)
             .HasForeignKey(x => x.TenantId)
             .OnDelete(DeleteBehavior.Restrict);
-        
-        builder.HasMany(x => x.Dispatches)
-            .WithOne()
-            .HasForeignKey(x => x.FacilityId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-
-
     }
 }
