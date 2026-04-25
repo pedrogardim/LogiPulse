@@ -74,7 +74,7 @@ public class DbInitializer
         vehicle.AssignToFacility(facilityWarehouse.Id);
         vehicle.Activate();
 
-        var driverUser = User.Create(tenant.Id, "Driver user", "Driver User", null);
+        var driverUser = User.Create(tenant.Id, Email.Create("test@user.com"), "Driver User", null);
 
         var driver = Driver.Create(tenant.Id, driverUser.Id, "D-001", "Driver 1", "123456789X", new DateOnly(2030,1,1), "123-555-6789");
         

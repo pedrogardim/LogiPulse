@@ -20,6 +20,14 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasForeignKey(x => x.TenantId)
             .OnDelete(DeleteBehavior.Restrict);
         
+        builder.OwnsOne(u => u.Email, email =>
+        {
+            email.Property(e => e.Value)
+                .HasColumnName("Email")
+                .HasMaxLength(254)
+                .IsRequired();
+        });
+        
         builder.HasIndex(x => x.EntraId).IsUnique();
         builder.HasIndex(x => x.Email).IsUnique();
     }
