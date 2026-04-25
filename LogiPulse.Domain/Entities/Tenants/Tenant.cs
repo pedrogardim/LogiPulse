@@ -4,6 +4,7 @@ using LogiPulse.Domain.Entities.Facilities;
 using LogiPulse.Domain.Entities.Products;
 using LogiPulse.Domain.Entities.Users;
 using LogiPulse.Domain.Entities.Vehicles;
+using LogiPulse.Domain.Entities.Drivers;
 
 namespace LogiPulse.Domain.Entities.Tenants;
 
@@ -21,6 +22,7 @@ public class Tenant : Entity
     public virtual List<User> Users { get; } = [];
     public virtual List<Facility> Facilities { get; } = [];
     public virtual List<Vehicle> Vehicles { get; } = [];
+    public virtual List<Driver> Drivers { get; } = [];
     
     protected Tenant()
     {

@@ -1,7 +1,9 @@
 using LogiPulse.Domain.Entities.Dispatches;
+using LogiPulse.Domain.Entities.Drivers;
 using LogiPulse.Domain.Entities.Facilities;
 using LogiPulse.Domain.Entities.Products;
 using LogiPulse.Domain.Entities.Tenants;
+using LogiPulse.Domain.Entities.Users;
 using LogiPulse.Domain.Entities.Vehicles;
 using LogiPulse.Domain.Shared;
 using Microsoft.EntityFrameworkCore;
@@ -71,8 +73,14 @@ public class DbInitializer
         vehicle.SetCapability("TEMP", "C", 2, 4);
         vehicle.AssignToFacility(facilityWarehouse.Id);
         vehicle.Activate();
+
+        var driverUser = User.Create(tenant.Id, "Driver user", "Driver User", null);
+
+        var driver = Driver.Create(tenant.Id, driverUser.Id, "D-001", "Driver 1", "123456789X", new DateOnly(2030,1,1), "123-555-6789");
         
-        var dispatch = Dispatch.Create("D-001-003", tenant.Id, product.Id, facilityWarehouse.Id, deliveryPoint1.Id, vehicle.Id);
+        var dispatch = Dispatch.Create("D-001-003", tenant.Id, product.Id, facilityWarehouse.Id, deliveryPoint1.Id);
+        dispatch.AssignVehicle(vehicle.Id);
+        dispatch.AssignDriver(driver.Id);
 
         context.Tenants.Add(tenant);
         context.Products.Add(product);
@@ -80,6 +88,8 @@ public class DbInitializer
         context.Dispatches.Add(dispatch);
         context.Facilities.AddRange(facilityWarehouse, deliveryPoint1, deliveryPoint2);
         context.Vehicles.Add(vehicle);
+        context.Users.Add(driverUser);
+        context.Drivers.Add(driver);
 
         await context.SaveChangesAsync();
     }
