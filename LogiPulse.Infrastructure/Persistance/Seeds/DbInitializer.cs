@@ -2,6 +2,7 @@ using LogiPulse.Domain.Entities.Dispatches;
 using LogiPulse.Domain.Entities.Facilities;
 using LogiPulse.Domain.Entities.Products;
 using LogiPulse.Domain.Entities.Tenants;
+using LogiPulse.Domain.Entities.Vehicles;
 using LogiPulse.Domain.Shared;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
@@ -21,7 +22,7 @@ public class DbInitializer
 
         var productCategory = ProductCategory.Create(tenant, "VAC", "Vaccines");
 
-        productCategory.SetRule("TEMP", "C", 2, 3.4444m);
+        productCategory.SetRequirement("TEMP", "C", 2, 3.4444m);
 
         var product = Product.Create(
             tenant,
@@ -30,10 +31,8 @@ public class DbInitializer
             "Pfizer Vaccine",
             productCategory);
 
-        product.SetRule("TILT", "DEG", -5, 5);
-
-        var facilityAddress = new Address("", "", "", "", "", "", "");
-
+        product.SetRequirement("TILT", "DEG", -5, 5);
+        
         var originAddr = new Address("Rod. Hélio Smidt", "s/n", "Guarulhos", "SP", "07190-100", "Brazil", "Aeroporto");
         var dest1Addr = new Address("Av. Dr. Enéas Carvalho de Aguiar", "255", "São Paulo", "SP", "05403-000", "Brazil",
             "Cerqueira César");
@@ -67,13 +66,20 @@ public class DbInitializer
             dest2Addr,
             new Point(-46.789, -23.562)  { SRID = 4326 });
 
-        var dispatch = Dispatch.Create("D-001-003", product, facilityWarehouse, deliveryPoint1);
+        var vehicle = Vehicle.Create(tenant.Id, "V-001", "Peugeot 123", "ABC-1234", VehicleType.SemiTruck);
+        
+        vehicle.SetCapability("TEMP", "C", 2, 4);
+        vehicle.AssignToFacility(facilityWarehouse.Id);
+        vehicle.Activate();
+        
+        var dispatch = Dispatch.Create("D-001-003", tenant.Id, product.Id, facilityWarehouse.Id, deliveryPoint1.Id, vehicle.Id);
 
         context.Tenants.Add(tenant);
         context.Products.Add(product);
         context.ProductCategories.Add(productCategory);
         context.Dispatches.Add(dispatch);
         context.Facilities.AddRange(facilityWarehouse, deliveryPoint1, deliveryPoint2);
+        context.Vehicles.Add(vehicle);
 
         await context.SaveChangesAsync();
     }

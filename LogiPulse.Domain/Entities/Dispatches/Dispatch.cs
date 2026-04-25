@@ -2,7 +2,7 @@ using System.Security.Cryptography;
 using LogiPulse.Domain.Base;
 using LogiPulse.Domain.Entities.Facilities;
 using LogiPulse.Domain.Entities.Products;
-using LogiPulse.Domain.Entities.Tenants;
+using LogiPulse.Domain.Entities.Vehicles;
 
 namespace LogiPulse.Domain.Entities.Dispatches;
 
@@ -23,29 +23,30 @@ public class Dispatch : Entity
     public Guid OriginFacilityId { get; private set; }
     public virtual Facility OriginFacility { get; private set; }
     
-    public Guid DestinyFacilityId { get; private set; }
-    public virtual Facility DestinyFacility { get; private set; }
+    public Guid DestinationFacilityId { get; private set; }
+    public virtual Facility DestinationFacility { get; private set; }
 
+    public Guid? VehicleId { get; private set; }
+    public virtual Vehicle? Vehicle { get; private set; }
+    
     protected Dispatch()
     {
     }
 
-    private Dispatch(Guid id, Guid tenantId, string externalId, Product product, Facility originFacility, Facility destinyFacility) : base(id)
+    private Dispatch(Guid id, Guid tenantId, string externalId, Guid productId, Guid originFacilityId, Guid destinationFacilityId, Guid vehicleId) : base(id)
     {
         TenantId = tenantId;
         ExternalId = externalId;
-        ProductId = product.Id;
-        Product = product;
-        OriginFacilityId = originFacility.Id;
-        OriginFacility = originFacility;
-        DestinyFacilityId = destinyFacility.Id;
-        DestinyFacility = destinyFacility;
+        ProductId = productId;
+        VehicleId = vehicleId;
+        OriginFacilityId = originFacilityId;
+        DestinationFacilityId = destinationFacilityId;
     }
 
-    public static Dispatch Create(string externalId, Product product, Facility originFacility, Facility destinyFacility)
+    public static Dispatch Create(string externalId, Guid tenantId, Guid productId, Guid originFacilityId, Guid destinationFacilityId, Guid vehicleId)
     {
         var id = Guid.CreateVersion7();
-        var dispatch = new Dispatch(id, product.TenantId, externalId, product, originFacility, destinyFacility);
+        var dispatch = new Dispatch(id, tenantId, externalId, productId, originFacilityId, destinationFacilityId, vehicleId);
         dispatch.ChangeStatus(DispatchStatus.Created);
         return dispatch;
     }

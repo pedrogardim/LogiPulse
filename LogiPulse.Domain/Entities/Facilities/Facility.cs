@@ -18,11 +18,7 @@ public class Facility : Entity
     public FacilityType Type { get; private set; }
 
     public Point Location { get; private set; }
-
     public Address Address { get; private set; }
-    
-    public virtual List<Dispatch> DestinyDispatches { get; } = [];
-    public virtual List<Dispatch> OriginDispatches { get; } = [];
 
     protected Facility()
     {

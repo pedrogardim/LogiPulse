@@ -15,7 +15,7 @@ public abstract class ProductRequirementStore : Entity
     {
     }
 
-    public void SetRule(string metricCode, string unitCode, decimal? min, decimal? max)
+    public void SetRequirement(string metricCode, string unitCode, decimal? min, decimal? max)
     {
         _requirements.RemoveAll(r => r.MetricCode == metricCode);
         _requirements.Add(new ProductRequirement(metricCode, unitCode, min, max));

@@ -4,10 +4,10 @@ using LogiPulse.Domain.Entities.Facilities;
 using LogiPulse.Domain.Entities.Products;
 using LogiPulse.Domain.Entities.Tenants;
 using LogiPulse.Domain.Entities.Users;
+using LogiPulse.Domain.Entities.Vehicles;
 
 namespace LogiPulse.Infrastructure.Persistance;
 
-using LogiPulse.Domain.Entities;
 public class LogiPulseDbContext(DbContextOptions<LogiPulseDbContext> options) : DbContext(options)
 {
     public virtual DbSet<Dispatch> Dispatches { get; set; }
@@ -16,6 +16,7 @@ public class LogiPulseDbContext(DbContextOptions<LogiPulseDbContext> options) : 
     public virtual DbSet<Tenant> Tenants { get; set; }
     public virtual DbSet<User> Users { get; set; }
     public virtual DbSet<Facility> Facilities { get; set; }
+    public virtual DbSet<Vehicle> Vehicles { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
