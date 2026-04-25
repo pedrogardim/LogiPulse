@@ -14,9 +14,9 @@ public class ProductTypeConfiguration : IEntityTypeConfiguration<ProductCategory
 
         builder.HasIndex(x => new { x.ExternalId, x.TenantId }).IsUnique();
 
-        builder.OwnsMany(x => x.Rules, rules =>
+        builder.OwnsMany(x => x.Requirements, requirements =>
         {
-            rules.ToJson();
+            requirements.ToJson();
         });
         
         builder.HasOne<Tenant>()

@@ -3,7 +3,7 @@ using LogiPulse.Domain.Entities.Tenants;
 
 namespace LogiPulse.Domain.Entities.Products;
 
-public class ProductCategory : ProductRuleStore
+public class ProductCategory : ProductRequirementStore
 {
     public Guid TenantId { get; private set; }
     public string ExternalId { get; private set; }
