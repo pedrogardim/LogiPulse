@@ -1,10 +1,5 @@
 using LogiPulse.Domain.Base;
-using LogiPulse.Domain.Entities.Dispatches;
-using LogiPulse.Domain.Entities.Facilities;
-using LogiPulse.Domain.Entities.Products;
-using LogiPulse.Domain.Entities.Users;
-using LogiPulse.Domain.Entities.Vehicles;
-using LogiPulse.Domain.Entities.Drivers;
+using LogiPulse.Domain.Exceptions;
 
 namespace LogiPulse.Domain.Entities.Tenants;
 
@@ -20,8 +15,14 @@ public class Tenant : Entity
     {
     }
     
-    private Tenant(Guid id, string displayName, string taxCode, string? legalName) : base(id)
+    private Tenant(Guid id, string displayName, string taxCode, string? legalName = null) : base(id)
     {
+        if (string.IsNullOrWhiteSpace(displayName))
+            throw new BusinessRuleException("DisplayName is mandatory");
+        
+        if (string.IsNullOrWhiteSpace(taxCode))
+            throw new BusinessRuleException("TaxCode is mandatory");
+        
         DisplayName = displayName;
         TaxCode = taxCode;
         LegalName = legalName;
