@@ -36,17 +36,12 @@ public class Driver : Entity
         if (userId == Guid.Empty)
             throw new BusinessRuleException("UserId is mandatory");
 
-        externalId = externalId?.Trim() ?? string.Empty;
-        name = name?.Trim() ?? string.Empty;
-        licenseNumber = licenseNumber?.Trim() ?? string.Empty;
-        phone = phone?.Trim() ?? string.Empty;
-
         if (string.IsNullOrWhiteSpace(externalId))
             throw new BusinessRuleException("ExternalId is mandatory");
         if (string.IsNullOrWhiteSpace(name))
             throw new BusinessRuleException("Name is mandatory");
         if (string.IsNullOrWhiteSpace(licenseNumber))
-            throw new BusinessRuleException("License number is mandatory");
+            throw new BusinessRuleException("LicenseNumber is mandatory");
         if (licenseExpiryDate <= DateOnly.FromDateTime(DateTime.UtcNow.Date))
             throw new BusinessRuleException("Driver License is expired");
         if (string.IsNullOrWhiteSpace(phone))
