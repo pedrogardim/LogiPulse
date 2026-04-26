@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using LogiPulse.Domain.Entities.Dispatches;
 using LogiPulse.Domain.Entities.Tenants;
 using LogiPulse.Domain.Entities.Users;
+using LogiPulse.Domain.Shared;
 
 namespace LogiPulse.Infrastructure.Persistance.Configurations;
 
@@ -20,13 +21,13 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasForeignKey(x => x.TenantId)
             .OnDelete(DeleteBehavior.Restrict);
         
-        builder.OwnsOne(u => u.Email, email =>
-        {
-            email.Property(e => e.Value)
-                .HasColumnName("Email")
-                .HasMaxLength(254)
-                .IsRequired();
-        });
+        builder.Property(x => x.Email)
+            .HasConversion(
+                email => email.Value,
+                value => Email.Create(value))
+            .HasColumnName("email")
+            .HasMaxLength(255)
+            .IsRequired();
         
         builder.HasIndex(x => x.EntraId).IsUnique();
         builder.HasIndex(x => x.Email).IsUnique();

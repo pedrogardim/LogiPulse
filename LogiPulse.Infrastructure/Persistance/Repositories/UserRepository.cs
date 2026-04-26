@@ -1,4 +1,5 @@
 using LogiPulse.Domain.Entities.Users;
+using LogiPulse.Domain.Shared;
 using Microsoft.EntityFrameworkCore;
 
 namespace LogiPulse.Infrastructure.Persistance.Repositories;
@@ -15,14 +16,14 @@ public class UserRepository(LogiPulseDbContext context) : IUserRepository
         return await context.Users.FirstOrDefaultAsync(u => u.Id == userId);
     }
     
-    public async Task<User?> GetByEmailAsync(string email)
+    public async Task<User?> GetByEmailAsync(Email email)
     {
-        return await context.Users.FirstOrDefaultAsync(u => u.Email.Value == email);
+        return await context.Users.FirstOrDefaultAsync(u => u.Email == email);
     }
     
-    public async Task<bool> ExistsByEmailAsync(string email)
+    public async Task<bool> ExistsByEmailAsync(Email email)
     {
-        return await context.Users.AnyAsync(u => u.Email.Value == email);
+        return await context.Users.AnyAsync(u => u.Email == email);
     }
 
     public async Task AddAsync(User user)

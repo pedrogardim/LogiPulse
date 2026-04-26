@@ -19,7 +19,7 @@ public class RegisterTenantCommandHandler(
         if (tenantExists)
             throw new ConflictException("Tenant already exists");
 
-        var userExists = await userRepository.ExistsByEmailAsync(request.AdminUserEmail);
+        var userExists = await userRepository.ExistsByEmailAsync(Email.Create(request.AdminUserEmail));
         if (userExists)
             throw new ConflictException("User already exists and belongs to a tenant");
             

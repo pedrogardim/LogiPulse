@@ -16,7 +16,7 @@ public class UserService(IUserRepository userRepository, IUnitOfWork unitOfWork)
             return entraUser;
 
         // 2) Check if the user was invited (user added by admin)
-        var user = await userRepository.GetByEmailAsync(email);
+        var user = await userRepository.GetByEmailAsync(Email.Create(email));
 
         if (user is null)
             throw new BusinessRuleException("User has not been invited");
