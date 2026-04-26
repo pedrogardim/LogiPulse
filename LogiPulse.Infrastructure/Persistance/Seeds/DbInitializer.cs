@@ -78,7 +78,7 @@ public class DbInitializer
 
         var driver = Driver.Create(tenant.Id, driverUser.Id, "D-001", "Driver 1", "123456789X", new DateOnly(2030,1,1), "123-555-6789");
         
-        var dispatch = Dispatch.Create("D-001-003", tenant.Id, product.Id, facilityWarehouse.Id, deliveryPoint1.Id);
+        var dispatch = Dispatch.Create(tenant.Id, "D-001-003", product.Id, facilityWarehouse.Id, deliveryPoint1.Id);
         dispatch.AssignVehicle(vehicle.Id);
         dispatch.AssignDriver(driver.Id);
 
