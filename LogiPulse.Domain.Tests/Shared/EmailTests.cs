@@ -43,7 +43,7 @@ public class EmailTests
     }
     
     [Fact]
-    public void ShouldCompare()
+    public void ShouldCompareByValue()
     {
         var email1 = Email.Create("admin@logipulse.io");
         var email2 = Email.Create("admin@logipulse.io");
