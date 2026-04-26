@@ -27,9 +27,9 @@ public class TenantTests
     [InlineData(null)]
     [InlineData("")]
     [InlineData("     ")]
-    public void Create_InvalidDisplayName_ThrowsException(string displayName)
+    public void Create_InvalidDisplayName_ThrowsException(string? displayName)
     {
-        Action act = () => Tenant.Create(displayName, ValidTaxCode);
+        Action act = () => Tenant.Create(displayName!, ValidTaxCode);
 
         act.Should().ThrowExactly<BusinessRuleException>()
             .WithMessage("DisplayName is mandatory");
@@ -39,9 +39,9 @@ public class TenantTests
     [InlineData(null)]
     [InlineData("")]
     [InlineData("     ")]
-    public void Create_InvalidTaxCode_ThrowsException(string taxCode)
+    public void Create_InvalidTaxCode_ThrowsException(string? taxCode)
     {
-        Action act = () => Tenant.Create(ValidDisplayName, taxCode);
+        Action act = () => Tenant.Create(ValidDisplayName, taxCode!);
 
         act.Should().ThrowExactly<BusinessRuleException>()
             .WithMessage("TaxCode is mandatory");

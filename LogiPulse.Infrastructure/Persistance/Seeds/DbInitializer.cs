@@ -27,11 +27,11 @@ public class DbInitializer
         productCategory.SetRequirement("TEMP", "C", 2, 3.4444m);
 
         var product = Product.Create(
-            tenant,
+            tenant.Id,
             "REF-PFIZER-01",
             "VAC-PFIZER",
             "Pfizer Vaccine",
-            productCategory);
+            productCategory.Id);
 
         product.SetRequirement("TILT", "DEG", -5, 5);
         

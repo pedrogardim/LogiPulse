@@ -53,9 +53,9 @@ public class UserTests
     [InlineData(null)]
     [InlineData("")]
     [InlineData("     ")]
-    public void Create_InvalidFullname_ThrowsException(string fullName)
+    public void Create_InvalidFullname_ThrowsException(string? fullName)
     {
-        Action act = () => User.Create(Guid.NewGuid(), _validEmail, fullName);
+        Action act = () => User.Create(Guid.NewGuid(), _validEmail, fullName!);
 
         act.Should().ThrowExactly<BusinessRuleException>()
             .WithMessage("FullName is mandatory");
