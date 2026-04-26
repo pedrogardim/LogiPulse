@@ -21,7 +21,7 @@ public abstract class ProductRequirementStore : Entity
         _requirements.Add(new ProductRequirement(metricCode, unitCode, min, max));
     }
 
-    public void ClearRules()
+    public void ClearRequirements()
     {
         _requirements.Clear();
     }

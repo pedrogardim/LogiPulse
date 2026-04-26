@@ -52,7 +52,7 @@ public class ProductRequirementStoreTests
     }
     
     [Fact]
-    public void ClearRules_ShouldEmptyTheRequirementsList()
+    public void ClearRequirements_ShouldEmptyTheRequirementsList()
     {
         var store = new TestStore(Guid.NewGuid());
         store.SetRequirement("TEMP", "CELSIUS", -5m, 10m);
@@ -60,7 +60,7 @@ public class ProductRequirementStoreTests
 
         store.Requirements.Count.Should().Be(2);
         
-        store.ClearRules();
+        store.ClearRequirements();
 
         store.Requirements.Should().BeEmpty();
     }
