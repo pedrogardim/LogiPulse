@@ -24,7 +24,7 @@ public class DispatchConfiguration : IEntityTypeConfiguration<Dispatch>
         });
 
         builder.HasOne<Tenant>()
-            .WithMany(t => t.Dispatches)
+            .WithMany()
             .HasForeignKey(x => x.TenantId)
             .OnDelete(DeleteBehavior.Restrict);
         

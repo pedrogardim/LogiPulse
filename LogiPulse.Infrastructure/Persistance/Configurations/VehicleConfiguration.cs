@@ -19,7 +19,7 @@ public class VehicleConfiguration : IEntityTypeConfiguration<Vehicle>
         });
 
         builder.HasOne<Tenant>()
-            .WithMany(t => t.Vehicles)
+            .WithMany()
             .HasForeignKey(x => x.TenantId)
             .OnDelete(DeleteBehavior.Restrict);
 

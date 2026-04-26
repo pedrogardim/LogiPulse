@@ -41,7 +41,7 @@ public class DriverConfiguration : IEntityTypeConfiguration<Driver>
             .IsRequired();
         
         builder.HasOne<Tenant>()
-            .WithMany(t => t.Drivers)
+            .WithMany()
             .HasForeignKey(x => x.TenantId)
             .OnDelete(DeleteBehavior.Restrict);
         

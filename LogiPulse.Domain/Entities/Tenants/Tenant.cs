@@ -15,14 +15,6 @@ public class Tenant : Entity
     public string TaxCode { get; private set; }
     
     public string? LegalName { get; private set; }
-
-    public virtual List<Dispatch> Dispatches { get; } = [];
-    public virtual List<Product> Products { get; } = [];
-    public virtual List<ProductCategory> ProductCategories { get; } = [];
-    public virtual List<User> Users { get; } = [];
-    public virtual List<Facility> Facilities { get; } = [];
-    public virtual List<Vehicle> Vehicles { get; } = [];
-    public virtual List<Driver> Drivers { get; } = [];
     
     protected Tenant()
     {

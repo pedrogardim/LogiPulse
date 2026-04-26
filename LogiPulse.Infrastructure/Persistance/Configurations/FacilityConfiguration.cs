@@ -32,7 +32,7 @@ public class FacilityConfiguration : IEntityTypeConfiguration<Facility>
         builder.HasIndex(x => new { x.Code, x.TenantId }).IsUnique();
         
         builder.HasOne<Tenant>()
-            .WithMany(t => t.Facilities)
+            .WithMany()
             .HasForeignKey(x => x.TenantId)
             .OnDelete(DeleteBehavior.Restrict);
     }

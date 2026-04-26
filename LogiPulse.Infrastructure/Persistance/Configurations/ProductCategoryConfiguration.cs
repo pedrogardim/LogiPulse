@@ -20,7 +20,7 @@ public class ProductTypeConfiguration : IEntityTypeConfiguration<ProductCategory
         });
         
         builder.HasOne<Tenant>()
-            .WithMany(t => t.ProductCategories)
+            .WithMany()
             .HasForeignKey(x => x.TenantId)
             .OnDelete(DeleteBehavior.Restrict);
     }

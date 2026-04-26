@@ -22,21 +22,6 @@ public class TenantConfiguration : IEntityTypeConfiguration<Tenant>
 
         builder.Property(x => x.LegalName)
             .HasMaxLength(200);
-
-        builder.HasMany(x => x.Dispatches)
-            .WithOne()
-            .HasForeignKey(x => x.TenantId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        builder.HasMany(x => x.Products)
-            .WithOne()
-            .HasForeignKey(x => x.TenantId)
-            .OnDelete(DeleteBehavior.Restrict);
-        
-        builder.HasMany(x => x.ProductCategories)
-            .WithOne()
-            .HasForeignKey(x => x.TenantId)
-            .OnDelete(DeleteBehavior.Restrict);
         
         builder.HasIndex(x => x.TaxCode)
             .IsUnique();
