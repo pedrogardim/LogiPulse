@@ -1,32 +1,25 @@
 using System.Text.RegularExpressions;
-using LogiPulse.Domain.Base;
 using LogiPulse.Domain.Exceptions;
 
 namespace LogiPulse.Domain.Shared;
 
-public class Email : ValueObject
+public partial record Email 
 {
-    public string Value { get; }
+    public string Value { get; init; }
 
-    private Email(string email) => Value = email;
+    private Email(string value) => Value = value;
+    
+    [GeneratedRegex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", RegexOptions.IgnoreCase)]
+    private static partial Regex EmailRegex();
 
     public static Email Create(string email)
     {
         if (string.IsNullOrWhiteSpace(email))
             throw new BusinessRuleException("Email cannot be empty");
 
-        var valid = Regex.IsMatch(email,
-            @"^[^@\s]+@[^@\s]+\.[^@\s]+$",
-            RegexOptions.IgnoreCase | RegexOptions.Compiled);
-
-        if (!valid)
+        if (!EmailRegex().IsMatch(email))
             throw new BusinessRuleException("Invalid email format");
 
-        return new Email(email);
-    }
-
-    protected override IEnumerable<object> GetEqualityComponents()
-    {
-        yield return Value;
+        return new Email(email.ToLowerInvariant());
     }
 }
