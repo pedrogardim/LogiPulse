@@ -22,7 +22,7 @@ public class DbInitializer
             "123456789",
             "LogiPulse Logistics CORP");
 
-        var productCategory = ProductCategory.Create(tenant, "VAC", "Vaccines");
+        var productCategory = ProductCategory.Create(tenant.Id, "VAC", "Vaccines");
 
         productCategory.SetRequirement("TEMP", "C", 2, 3.4444m);
 
