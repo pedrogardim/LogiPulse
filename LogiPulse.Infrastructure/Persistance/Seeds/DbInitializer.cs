@@ -34,7 +34,7 @@ public class DbInitializer
             productCategory.Id);
 
         product.SetRequirement("TILT", "DEG", -5, 5);
-        
+
         var originAddr = new Address("Rod. Hélio Smidt", "s/n", "Guarulhos", "SP", "07190-100", "Brazil", "Aeroporto");
         var dest1Addr = new Address("Av. Dr. Enéas Carvalho de Aguiar", "255", "São Paulo", "SP", "05403-000", "Brazil",
             "Cerqueira César");
@@ -42,7 +42,7 @@ public class DbInitializer
             "Brazil", "Jardim Novo Osasco");
 
         var facilityWarehouse = Facility.Create(
-            tenant,
+            tenant.Id,
             "CD-GRU-01",
             "CD Pfizer Guarulhos",
             "CD-GRU",
@@ -51,33 +51,34 @@ public class DbInitializer
             new Point(-46.473, -23.430) { SRID = 4326 });
 
         var deliveryPoint1 = Facility.Create(
-            tenant,
+            tenant.Id,
             "HOSP-HC-SP",
             "Hospital das Clínicas SP",
             "HC-SP",
             FacilityType.DeliveryPoint,
             dest1Addr,
-            new Point(-46.665, -23.557)  { SRID = 4326 });
+            new Point(-46.665, -23.557) { SRID = 4326 });
 
         var deliveryPoint2 = Facility.Create(
-            tenant,
+            tenant.Id,
             "HOSP-MUNIC-OSZ",
             "Hospital Municipal Osasco",
             "HM-OSZ",
             FacilityType.DeliveryPoint,
             dest2Addr,
-            new Point(-46.789, -23.562)  { SRID = 4326 });
+            new Point(-46.789, -23.562) { SRID = 4326 });
 
         var vehicle = Vehicle.Create(tenant.Id, "V-001", "Peugeot 123", "ABC-1234", VehicleType.SemiTruck);
-        
+
         vehicle.SetCapability("TEMP", "C", 2, 4);
         vehicle.AssignToFacility(facilityWarehouse.Id);
         vehicle.Activate();
 
         var driverUser = User.Create(tenant.Id, Email.Create("test@user.com"), "Driver User", null);
 
-        var driver = Driver.Create(tenant.Id, driverUser.Id, "D-001", "Driver 1", "123456789X", new DateOnly(2030,1,1), "123-555-6789");
-        
+        var driver = Driver.Create(tenant.Id, driverUser.Id, "D-001", "Driver 1", "123456789X",
+            new DateOnly(2030, 1, 1), "123-555-6789");
+
         var dispatch = Dispatch.Create(tenant.Id, "D-001-003", product.Id, facilityWarehouse.Id, deliveryPoint1.Id);
         dispatch.AssignVehicle(vehicle.Id);
         dispatch.AssignDriver(driver.Id);
