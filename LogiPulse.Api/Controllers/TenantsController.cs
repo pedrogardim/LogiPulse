@@ -3,7 +3,7 @@ using LogiPulse.Api.Extensions;
 using LogiPulse.Application.Tenants.Commands;
 using LogiPulse.Application.Tenants.DTOs;
 using Microsoft.AspNetCore.Mvc;
-using LogiPulse.Infrastructure.Persistance;
+using LogiPulse.Infrastructure.Persistence;
 using MediatR;
 
 namespace LogiPulse.Api.Controllers;

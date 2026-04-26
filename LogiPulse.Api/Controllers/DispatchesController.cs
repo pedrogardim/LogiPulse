@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using LogiPulse.Infrastructure.Persistance;
+using LogiPulse.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace LogiPulse.Api.Controllers;

@@ -6,7 +6,7 @@ using LogiPulse.Domain.Entities.Tenants;
 using LogiPulse.Domain.Entities.Users;
 using LogiPulse.Domain.Entities.Vehicles;
 
-namespace LogiPulse.Infrastructure.Persistance.Configurations;
+namespace LogiPulse.Infrastructure.Persistence.Configurations;
 
 public class DriverConfiguration : IEntityTypeConfiguration<Driver>
 {

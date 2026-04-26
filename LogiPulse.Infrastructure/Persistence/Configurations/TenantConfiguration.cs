@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using LogiPulse.Domain.Entities.Dispatches;
 using LogiPulse.Domain.Entities.Tenants;
 
-namespace LogiPulse.Infrastructure.Persistance.Configurations;
+namespace LogiPulse.Infrastructure.Persistence.Configurations;
 
 public class TenantConfiguration : IEntityTypeConfiguration<Tenant>
 {

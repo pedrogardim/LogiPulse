@@ -1,7 +1,7 @@
 using LogiPulse.Domain.Entities.Tenants;
 using Microsoft.EntityFrameworkCore;
 
-namespace LogiPulse.Infrastructure.Persistance.Repositories;
+namespace LogiPulse.Infrastructure.Persistence.Repositories;
 
 public class TenantRepository(LogiPulseDbContext context) : ITenantRepository
 {

@@ -2,9 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using LogiPulse.Domain.Entities.Dispatches;
 using LogiPulse.Domain.Entities.Tenants;
-using LogiPulse.Domain.Entities.Vehicles;
 
-namespace LogiPulse.Infrastructure.Persistance.Configurations;
+namespace LogiPulse.Infrastructure.Persistence.Configurations;
 
 public class DispatchConfiguration : IEntityTypeConfiguration<Dispatch>
 {

@@ -9,7 +9,7 @@ using LogiPulse.Domain.Shared;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 
-namespace LogiPulse.Infrastructure.Persistance.Seeds;
+namespace LogiPulse.Infrastructure.Persistence.Seeds;
 
 public class DbInitializer
 {

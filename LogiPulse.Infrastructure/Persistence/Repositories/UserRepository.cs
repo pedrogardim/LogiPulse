@@ -2,7 +2,7 @@ using LogiPulse.Domain.Entities.Users;
 using LogiPulse.Domain.Shared;
 using Microsoft.EntityFrameworkCore;
 
-namespace LogiPulse.Infrastructure.Persistance.Repositories;
+namespace LogiPulse.Infrastructure.Persistence.Repositories;
 
 public class UserRepository(LogiPulseDbContext context) : IUserRepository
 {

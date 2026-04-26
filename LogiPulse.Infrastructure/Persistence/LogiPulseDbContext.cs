@@ -7,7 +7,7 @@ using LogiPulse.Domain.Entities.Tenants;
 using LogiPulse.Domain.Entities.Users;
 using LogiPulse.Domain.Entities.Vehicles;
 
-namespace LogiPulse.Infrastructure.Persistance;
+namespace LogiPulse.Infrastructure.Persistence;
 
 public class LogiPulseDbContext(DbContextOptions<LogiPulseDbContext> options) : DbContext(options)
 {

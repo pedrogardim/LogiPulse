@@ -2,7 +2,7 @@ using LogiPulse.Domain.Base;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
-namespace LogiPulse.Infrastructure.Persistance.Interceptors;
+namespace LogiPulse.Infrastructure.Persistence.Interceptors;
 
 public class UpdateTimestampsInterceptor : SaveChangesInterceptor
 {

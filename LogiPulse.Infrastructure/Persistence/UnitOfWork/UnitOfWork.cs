@@ -1,6 +1,6 @@
 using LogiPulse.Application.Interfaces;
 
-namespace LogiPulse.Infrastructure.Persistance.UnitOfWork;
+namespace LogiPulse.Infrastructure.Persistence.UnitOfWork;
 
 public class UnitOfWork(LogiPulseDbContext context) : IUnitOfWork
 {

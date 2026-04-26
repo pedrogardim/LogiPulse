@@ -5,7 +5,7 @@ using LogiPulse.Domain.Entities.Tenants;
 using LogiPulse.Domain.Entities.Users;
 using LogiPulse.Domain.Shared;
 
-namespace LogiPulse.Infrastructure.Persistance.Configurations;
+namespace LogiPulse.Infrastructure.Persistence.Configurations;
 
 public class UserConfiguration : IEntityTypeConfiguration<User>
 {
