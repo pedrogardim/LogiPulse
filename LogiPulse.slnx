@@ -1,5 +1,6 @@
 <Solution>
   <Project Path="LogiPulse.Api/LogiPulse.Api.csproj" />
+  <Project Path="LogiPulse.Application.Tests/LogiPulse.Application.Tests.csproj" />
   <Project Path="LogiPulse.Application/LogiPulse.Application.csproj" />
   <Project Path="LogiPulse.Domain.Tests/LogiPulse.Domain.Tests.csproj" />
   <Project Path="LogiPulse.Domain/LogiPulse.Domain.csproj" />
