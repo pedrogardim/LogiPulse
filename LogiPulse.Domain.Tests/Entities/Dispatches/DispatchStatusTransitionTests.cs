@@ -15,7 +15,7 @@ public class DispatchStatusTransitionTests
         transition.Should().NotBeNull();
 
         transition.Status.Should().Be(DispatchStatus.Created);
-        transition.OcurredAtUtc.Should().Be(now);
+        transition.OccurredAtUtc.Should().Be(now);
         transition.Reason.Should().Be(reason ?? null);
     }
     

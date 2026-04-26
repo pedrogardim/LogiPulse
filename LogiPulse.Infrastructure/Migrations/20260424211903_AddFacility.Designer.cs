@@ -377,7 +377,7 @@ namespace LogiPulse.Infrastructure.Migrations
                             b1.Property<int>("__synthesizedOrdinal")
                                 .ValueGeneratedOnAdd();
 
-                            b1.Property<DateTime>("OcurredAtUtc");
+                            b1.Property<DateTime>("OccurredAtUtc");
 
                             b1.Property<string>("Reason");
 

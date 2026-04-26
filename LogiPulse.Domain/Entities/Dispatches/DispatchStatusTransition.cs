@@ -2,6 +2,6 @@ namespace LogiPulse.Domain.Entities.Dispatches;
 
 public record DispatchStatusTransition(
     DispatchStatus Status,
-    DateTime OcurredAtUtc,
+    DateTime OccurredAtUtc,
     string? Reason = null
 );

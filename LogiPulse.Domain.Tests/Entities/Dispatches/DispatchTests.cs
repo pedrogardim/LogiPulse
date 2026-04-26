@@ -103,7 +103,7 @@ public class DispatchTests
         var lastStatus = dispatch.StatusHistory.Last();
         lastStatus.Status.Should().Be(DispatchStatus.InTransit);
         lastStatus.Reason.Should().Be("Sent");
-        lastStatus.OcurredAtUtc.Should().BeCloseTo(time, TimeSpan.FromSeconds(1));
+        lastStatus.OccurredAtUtc.Should().BeCloseTo(time, TimeSpan.FromSeconds(1));
     }
     
     [Fact]
