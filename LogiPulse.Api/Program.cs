@@ -1,5 +1,7 @@
+using System.Net.Mime;
 using System.Net.NetworkInformation;
 using System.Text.Json.Serialization;
+using FluentValidation;
 using LogiPulse.Api.Middlewares;
 using LogiPulse.Application.Interfaces;
 using LogiPulse.Application.Tenants;
@@ -11,6 +13,7 @@ using LogiPulse.Infrastructure.Persistence.Interceptors;
 using LogiPulse.Infrastructure.Persistence.Repositories;
 using LogiPulse.Infrastructure.Persistence.Seeds;
 using LogiPulse.Infrastructure.Persistence.UnitOfWork;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
@@ -30,6 +33,12 @@ builder.Services.AddControllers()
     .AddJsonOptions(options => { options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles; });
 
 var connectionString = builder.Configuration.GetConnectionString("LogiPulseDatabase");
+
+builder.Services.AddTransient(
+    typeof(IPipelineBehavior<,>),
+    typeof(ValidationBehavior<,>));
+
+builder.Services.AddValidatorsFromAssembly(typeof(IUnitOfWork).Assembly);
 
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(IUnitOfWork).Assembly)

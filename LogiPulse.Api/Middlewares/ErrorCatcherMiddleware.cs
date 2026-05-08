@@ -1,3 +1,4 @@
+using FluentValidation;
 using LogiPulse.Domain.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,6 +19,7 @@ public class ErrorCatcherMiddleware : IMiddleware
                 UnauthorizedAccessException => (StatusCodes.Status401Unauthorized, ex.Message),
                 ConflictException => (StatusCodes.Status409Conflict, ex.Message),
                 BusinessRuleException => (StatusCodes.Status422UnprocessableEntity, ex.Message),
+                ValidationException => (StatusCodes.Status400BadRequest, ex.Message),
                 _ => (StatusCodes.Status500InternalServerError, ex.Message != string.Empty ? ex.Message : "An error occurred")
             };
             
