@@ -1,8 +1,10 @@
+using LogiPulse.Domain.Shared;
+
 namespace LogiPulse.Application.Common;
 
-public class UserContext
+public record UserContext
 {
-    public Guid UserId { get; set; }
-    public Guid TenantId { get; set; }
-    public string Email { get; set; } = string.Empty;
+    public Guid UserId;
+    public Guid TenantId;
+    public required Email Email;
 }
