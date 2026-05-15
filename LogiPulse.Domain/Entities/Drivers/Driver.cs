@@ -34,7 +34,7 @@ public class Driver : Entity
         if (tenantId == Guid.Empty)
             throw new BusinessRuleException("TenantId is mandatory");
         if (userId != null && userId == Guid.Empty)
-            throw new BusinessRuleException("UserId must be a valid Guid when provided");
+            throw new BusinessRuleException("UserId must be null or a non-empty Guid");
 
         if (string.IsNullOrWhiteSpace(externalId))
             throw new BusinessRuleException("ExternalId is mandatory");
