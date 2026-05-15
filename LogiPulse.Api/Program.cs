@@ -6,6 +6,7 @@ using LogiPulse.Application.Users;
 using LogiPulse.Domain.Entities.Drivers;
 using LogiPulse.Domain.Entities.Tenants;
 using LogiPulse.Domain.Entities.Users;
+using LogiPulse.Domain.Entities.Vehicles;
 using LogiPulse.Infrastructure.Persistence;
 using LogiPulse.Infrastructure.Persistence.Interceptors;
 using LogiPulse.Infrastructure.Persistence.Repositories;
@@ -28,7 +29,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization();
 
 builder.Services.AddControllers()
-    .AddJsonOptions(options => { options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles; });
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
 
 var connectionString = builder.Configuration.GetConnectionString("LogiPulseDatabase");
 
@@ -53,11 +58,11 @@ builder.Services.AddScoped<UserTenantMiddleware>();
 builder.Services.AddScoped<ErrorCatcherMiddleware>();
 
 builder.Services.AddScoped<ITenantRepository, TenantRepository>();
-
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IUserService, UserService>();
-
 builder.Services.AddScoped<IDriverRepository, DriverRepository>();
+builder.Services.AddScoped<IVehicleRepository, VehicleRepository>();
+
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
