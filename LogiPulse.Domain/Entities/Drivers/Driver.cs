@@ -9,7 +9,7 @@ public class Driver : Entity
 {
     public Guid TenantId { get; private set; }
 
-    public Guid UserId { get; private set; }
+    public Guid? UserId { get; private set; }
     public virtual User User { get; private set; }
 
     public string ExternalId { get; private set; }
@@ -28,13 +28,13 @@ public class Driver : Entity
     {
     }
 
-    private Driver(Guid id, Guid tenantId, Guid userId, string externalId, string name, string phone,
+    private Driver(Guid id, Guid tenantId, Guid? userId, string externalId, string name, string phone,
         string licenseNumber, DateOnly licenseExpiryDate, bool isActive) : base(id)
     {
         if (tenantId == Guid.Empty)
             throw new BusinessRuleException("TenantId is mandatory");
-        if (userId == Guid.Empty)
-            throw new BusinessRuleException("UserId is mandatory");
+        if (userId != null && userId == Guid.Empty)
+            throw new BusinessRuleException("UserId must be a valid Guid when provided");
 
         if (string.IsNullOrWhiteSpace(externalId))
             throw new BusinessRuleException("ExternalId is mandatory");
@@ -57,7 +57,7 @@ public class Driver : Entity
         IsActive = isActive;
     }
 
-    public static Driver Create(Guid tenantId, Guid userId, string externalId, string name, string phone,
+    public static Driver Create(Guid tenantId, Guid? userId, string externalId, string name, string phone,
         string licenseNumber, DateOnly licenseExpiryDate)
     {
         var id = Guid.CreateVersion7();
