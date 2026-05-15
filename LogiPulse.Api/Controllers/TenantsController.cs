@@ -21,7 +21,7 @@ public class TenantsController(IMediator mediator, LogiPulseDbContext dbContext)
     
     [HttpPost("register")]
     [BypassUserValidation]
-    public async Task<IActionResult> RegisterNewTenantAsync([FromBody] CreateTenantRequest request)
+    public async Task<IActionResult> RegisterNewTenantAsync([FromBody] RegisterTenantRequest request)
     {
         var entraId = User.GetObjectId();
         var email = User.GetEmail();

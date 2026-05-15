@@ -1,6 +1,6 @@
 namespace LogiPulse.Application.Tenants.DTOs;
 
-public record CreateTenantRequest(
+public record RegisterTenantRequest(
     string DisplayName,
     string TaxCode
 );
