@@ -1,11 +1,9 @@
-using System.Net.Mime;
-using System.Net.NetworkInformation;
 using System.Text.Json.Serialization;
 using FluentValidation;
 using LogiPulse.Api.Middlewares;
 using LogiPulse.Application.Interfaces;
-using LogiPulse.Application.Tenants;
 using LogiPulse.Application.Users;
+using LogiPulse.Domain.Entities.Drivers;
 using LogiPulse.Domain.Entities.Tenants;
 using LogiPulse.Domain.Entities.Users;
 using LogiPulse.Infrastructure.Persistence;
@@ -59,15 +57,14 @@ builder.Services.AddScoped<ITenantRepository, TenantRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 
+builder.Services.AddScoped<IDriverRepository, DriverRepository>();
+
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
+if (app.Environment.IsDevelopment()) app.MapOpenApi();
 
 using (var scope = app.Services.CreateScope())
 {
