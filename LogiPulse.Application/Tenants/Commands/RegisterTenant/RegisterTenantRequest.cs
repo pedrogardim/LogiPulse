@@ -1,4 +1,4 @@
-namespace LogiPulse.Application.Tenants.DTOs;
+namespace LogiPulse.Application.Tenants.Commands.RegisterTenant;
 
 public record RegisterTenantRequest(
     string DisplayName,

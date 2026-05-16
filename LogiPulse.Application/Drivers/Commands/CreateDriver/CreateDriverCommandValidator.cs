@@ -1,16 +1,11 @@
 using FluentValidation;
 
-namespace LogiPulse.Application.Drivers.Commands;
+namespace LogiPulse.Application.Drivers.Commands.CreateDriver;
 
 public class CreateDriverCommandValidator : AbstractValidator<CreateDriverCommand>
 {
     public CreateDriverCommandValidator()
     {
-        RuleFor(x => x.TenantId)
-            .NotNull()
-            .NotEqual(Guid.Empty)
-            .WithMessage("TenantId is mandatory");
-
         RuleFor(x => x.ExternalId)
             .NotEmpty()
             .WithMessage("ExternalId is mandatory");

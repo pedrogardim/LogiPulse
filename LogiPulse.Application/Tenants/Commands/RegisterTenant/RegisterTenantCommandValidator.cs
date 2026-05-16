@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace LogiPulse.Application.Tenants.Commands;
+namespace LogiPulse.Application.Tenants.Commands.RegisterTenant;
 
 public class RegisterTenantCommandValidator : AbstractValidator<RegisterTenantCommand>
 {

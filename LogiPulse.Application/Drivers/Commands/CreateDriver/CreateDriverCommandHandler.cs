@@ -1,21 +1,25 @@
+using LogiPulse.Application.Common;
 using LogiPulse.Application.Interfaces;
 using LogiPulse.Domain.Entities.Drivers;
 using LogiPulse.Domain.Entities.Users;
 using LogiPulse.Domain.Exceptions;
 using MediatR;
 
-namespace LogiPulse.Application.Drivers.Commands;
+namespace LogiPulse.Application.Drivers.Commands.CreateDriver;
 
 public class CreateDriverCommandHandler(
     IDriverRepository driverRepository,
     IUserRepository userRepository,
+    IUserContext userContext,
     IUnitOfWork unitOfWork
 ) : IRequestHandler<CreateDriverCommand, Guid>
 {
     public async Task<Guid> Handle(CreateDriverCommand request, CancellationToken cancellationToken)
     {
+        var tenantId = userContext.TenantId;
+
         var exists = await driverRepository.ExistsByTenantIdAndUserIdAndExternalIdAsync(
-            request.TenantId,
+            tenantId,
             request.UserId,
             request.ExternalId,
             cancellationToken
@@ -32,7 +36,7 @@ public class CreateDriverCommandHandler(
         }
 
         var driver = Driver.Create(
-            request.TenantId,
+            tenantId,
             request.UserId,
             request.ExternalId,
             request.Name,

@@ -1,7 +1,6 @@
-using LogiPulse.Domain.Entities.Tenants;
 using MediatR;
 
-namespace LogiPulse.Application.Tenants.Commands;
+namespace LogiPulse.Application.Tenants.Commands.RegisterTenant;
 
 public record RegisterTenantCommand : IRequest<Guid>
 {

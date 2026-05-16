@@ -1,7 +1,6 @@
 using LogiPulse.Api.Attributes;
 using LogiPulse.Api.Extensions;
-using LogiPulse.Application.Tenants.Commands;
-using LogiPulse.Application.Tenants.DTOs;
+using LogiPulse.Application.Tenants.Commands.RegisterTenant;
 using Microsoft.AspNetCore.Mvc;
 using LogiPulse.Infrastructure.Persistence;
 using MediatR;
@@ -18,7 +17,7 @@ public class TenantsController(IMediator mediator, LogiPulseDbContext dbContext)
         var dispatches = dbContext.Tenants.ToList();
         return Ok(dispatches);
     }
-    
+
     [HttpPost("register")]
     [BypassUserValidation]
     public async Task<IActionResult> RegisterNewTenantAsync([FromBody] RegisterTenantRequest request)
@@ -26,16 +25,16 @@ public class TenantsController(IMediator mediator, LogiPulseDbContext dbContext)
         var entraId = User.GetObjectId();
         var email = User.GetEmail();
         var name = User.GetName();
-        
+
         var command = new RegisterTenantCommand
         {
             TaxCode = request.TaxCode,
             DisplayName = request.DisplayName,
             AdminUserEntraId = entraId,
             AdminUserEmail = email,
-            AdminUserName = name,
+            AdminUserName = name
         };
-        
+
         var result = await mediator.Send(command);
         return Ok(result);
     }

@@ -1,5 +1,5 @@
 using FluentAssertions;
-using LogiPulse.Application.Drivers.Commands;
+using LogiPulse.Application.Drivers.Commands.CreateDriver;
 
 namespace LogiPulse.Application.Tests.Drivers.Commands;
 
@@ -10,7 +10,6 @@ public class CreateDriverCommandValidatorTests
     {
         var command = new CreateDriverCommand
         {
-            TenantId = Guid.CreateVersion7(),
             ExternalId = "D-00001",
             UserId = Guid.Empty,
             Name = "Pedro",

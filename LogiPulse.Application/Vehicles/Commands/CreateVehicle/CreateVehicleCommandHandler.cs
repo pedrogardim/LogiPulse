@@ -1,19 +1,23 @@
+using LogiPulse.Application.Common;
 using LogiPulse.Application.Interfaces;
 using LogiPulse.Domain.Entities.Vehicles;
 using LogiPulse.Domain.Exceptions;
 using MediatR;
 
-namespace LogiPulse.Application.Vehicles.Commands;
+namespace LogiPulse.Application.Vehicles.Commands.CreateVehicle;
 
 public class CreateVehicleCommandHandler(
     IVehicleRepository vehicleRepository,
+    IUserContext userContext,
     IUnitOfWork unitOfWork
 ) : IRequestHandler<CreateVehicleCommand, Guid>
 {
     public async Task<Guid> Handle(CreateVehicleCommand request, CancellationToken cancellationToken)
     {
+        var tenantId = userContext.TenantId;
+
         var exists = await vehicleRepository.ExistsByTenantIdAndExternalIdAsync(
-            request.TenantId,
+            tenantId,
             request.ExternalId,
             cancellationToken
         );
@@ -22,7 +26,7 @@ public class CreateVehicleCommandHandler(
             throw new ConflictException("Vehicle already exists");
 
         var vehicle = Vehicle.Create(
-            request.TenantId,
+            tenantId,
             request.ExternalId,
             request.Name,
             request.LicensePlate,

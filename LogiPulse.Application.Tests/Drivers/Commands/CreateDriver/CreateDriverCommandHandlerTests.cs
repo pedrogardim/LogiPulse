@@ -1,12 +1,13 @@
 using FluentAssertions;
-using LogiPulse.Application.Drivers.Commands;
+using LogiPulse.Application.Common;
+using LogiPulse.Application.Drivers.Commands.CreateDriver;
 using LogiPulse.Application.Interfaces;
 using LogiPulse.Domain.Entities.Drivers;
 using LogiPulse.Domain.Entities.Users;
 using LogiPulse.Domain.Exceptions;
 using NSubstitute;
 
-namespace LogiPulse.Application.Tests.Drivers.Commands;
+namespace LogiPulse.Application.Tests.Drivers.Commands.CreateDriver;
 
 public class CreateDriverCommandHandlerTests
 {
@@ -14,6 +15,7 @@ public class CreateDriverCommandHandlerTests
     private readonly IUserRepository _userRepositoryMock;
     private readonly IUnitOfWork _unitOfWorkMock;
     private readonly CreateDriverCommandHandler _handler;
+    private readonly Guid _tenantId;
 
     public CreateDriverCommandHandlerTests()
     {
@@ -21,7 +23,15 @@ public class CreateDriverCommandHandlerTests
         _userRepositoryMock = Substitute.For<IUserRepository>();
         _unitOfWorkMock = Substitute.For<IUnitOfWork>();
 
-        _handler = new CreateDriverCommandHandler(_driverRepositoryMock, _userRepositoryMock, _unitOfWorkMock);
+        var userContextMock = Substitute.For<IUserContext>();
+        _tenantId = Guid.CreateVersion7();
+        userContextMock.TenantId.Returns(_tenantId);
+
+        _handler = new CreateDriverCommandHandler(
+            _driverRepositoryMock,
+            _userRepositoryMock,
+            userContextMock,
+            _unitOfWorkMock);
     }
 
     [Fact]
@@ -29,7 +39,6 @@ public class CreateDriverCommandHandlerTests
     {
         var command = new CreateDriverCommand
         {
-            TenantId = Guid.CreateVersion7(),
             ExternalId = "D-00001",
             UserId = Guid.CreateVersion7(),
             Name = "Pedro",
@@ -51,7 +60,7 @@ public class CreateDriverCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
         result.Should().NotBeEmpty();
 
-        capturedDriver!.TenantId.Should().Be(command.TenantId);
+        capturedDriver!.TenantId.Should().Be(_tenantId);
         capturedDriver!.ExternalId.Should().Be(command.ExternalId);
         capturedDriver!.UserId.Should().Be(command.UserId);
         capturedDriver!.Name.Should().Be(command.Name);
@@ -69,7 +78,6 @@ public class CreateDriverCommandHandlerTests
     {
         var command = new CreateDriverCommand
         {
-            TenantId = Guid.CreateVersion7(),
             ExternalId = "D-00001",
             Name = "Pedro",
             Phone = "12345678",
@@ -86,7 +94,7 @@ public class CreateDriverCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
         result.Should().NotBeEmpty();
 
-        capturedDriver!.TenantId.Should().Be(command.TenantId);
+        capturedDriver!.TenantId.Should().Be(_tenantId);
         capturedDriver!.ExternalId.Should().Be(command.ExternalId);
         capturedDriver!.UserId.Should().BeNull();
         capturedDriver!.Name.Should().Be(command.Name);
@@ -104,7 +112,6 @@ public class CreateDriverCommandHandlerTests
     {
         var command = new CreateDriverCommand
         {
-            TenantId = Guid.CreateVersion7(),
             ExternalId = "D-00001",
             UserId = Guid.CreateVersion7(),
             Name = "Pedro",
@@ -123,7 +130,6 @@ public class CreateDriverCommandHandlerTests
     {
         var command = new CreateDriverCommand
         {
-            TenantId = Guid.CreateVersion7(),
             ExternalId = "D-00001",
             UserId = Guid.CreateVersion7(),
             Name = "Pedro",
@@ -134,7 +140,7 @@ public class CreateDriverCommandHandlerTests
 
         _driverRepositoryMock
             .ExistsByTenantIdAndUserIdAndExternalIdAsync(
-                command.TenantId,
+                _tenantId,
                 command.UserId,
                 command.ExternalId,
                 CancellationToken.None

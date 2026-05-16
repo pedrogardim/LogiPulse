@@ -1,24 +1,30 @@
 using FluentAssertions;
-using LogiPulse.Application.Vehicles.Commands;
+using LogiPulse.Application.Common;
 using LogiPulse.Application.Interfaces;
+using LogiPulse.Application.Vehicles.Commands.CreateVehicle;
 using LogiPulse.Domain.Entities.Vehicles;
 using LogiPulse.Domain.Exceptions;
 using NSubstitute;
 
-namespace LogiPulse.Application.Tests.Vehicles.Commands;
+namespace LogiPulse.Application.Tests.Vehicles.Commands.CreateVehicle;
 
 public class CreateVehicleCommandHandlerTests
 {
     private readonly IVehicleRepository _vehicleRepositoryMock;
     private readonly IUnitOfWork _unitOfWorkMock;
     private readonly CreateVehicleCommandHandler _handler;
+    private readonly Guid _tenantId;
 
     public CreateVehicleCommandHandlerTests()
     {
         _vehicleRepositoryMock = Substitute.For<IVehicleRepository>();
         _unitOfWorkMock = Substitute.For<IUnitOfWork>();
 
-        _handler = new CreateVehicleCommandHandler(_vehicleRepositoryMock, _unitOfWorkMock);
+        var userContextMock = Substitute.For<IUserContext>();
+        _tenantId = Guid.CreateVersion7();
+        userContextMock.TenantId.Returns(_tenantId);
+
+        _handler = new CreateVehicleCommandHandler(_vehicleRepositoryMock, userContextMock, _unitOfWorkMock);
     }
 
     [Fact]
@@ -26,7 +32,6 @@ public class CreateVehicleCommandHandlerTests
     {
         var command = new CreateVehicleCommand
         {
-            TenantId = Guid.CreateVersion7(),
             ExternalId = "V-00001",
             Name = "Pedro",
             LicensePlate = "8310XY",
@@ -42,7 +47,7 @@ public class CreateVehicleCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
         result.Should().NotBeEmpty();
 
-        capturedVehicle!.TenantId.Should().Be(command.TenantId);
+        capturedVehicle!.TenantId.Should().Be(_tenantId);
         capturedVehicle!.ExternalId.Should().Be(command.ExternalId);
         capturedVehicle!.Name.Should().Be(command.Name);
         capturedVehicle!.LicensePlate.Should().Be(command.LicensePlate);
@@ -61,7 +66,6 @@ public class CreateVehicleCommandHandlerTests
     {
         var command = new CreateVehicleCommand
         {
-            TenantId = Guid.CreateVersion7(),
             ExternalId = "V-00001",
             Name = "Pedro",
             LicensePlate = "8310XY",
@@ -70,7 +74,7 @@ public class CreateVehicleCommandHandlerTests
 
         _vehicleRepositoryMock
             .ExistsByTenantIdAndExternalIdAsync(
-                command.TenantId,
+                _tenantId,
                 command.ExternalId,
                 CancellationToken.None
             )

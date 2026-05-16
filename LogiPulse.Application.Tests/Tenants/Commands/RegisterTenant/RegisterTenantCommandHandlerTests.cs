@@ -1,13 +1,13 @@
 using FluentAssertions;
 using LogiPulse.Application.Interfaces;
-using LogiPulse.Application.Tenants.Commands;
+using LogiPulse.Application.Tenants.Commands.RegisterTenant;
 using LogiPulse.Domain.Entities.Tenants;
 using LogiPulse.Domain.Entities.Users;
 using LogiPulse.Domain.Exceptions;
 using LogiPulse.Domain.Shared;
 using NSubstitute;
 
-namespace LogiPulse.Application.Tests.Tenants.Commands;
+namespace LogiPulse.Application.Tests.Tenants.Commands.RegisterTenant;
 
 public class RegisterTenantCommandHandlerTests
 {
@@ -35,7 +35,7 @@ public class RegisterTenantCommandHandlerTests
             DisplayName = "LogiPulse",
             AdminUserEntraId = Guid.NewGuid(),
             AdminUserEmail = "admin@mail.com",
-            AdminUserName = "admin",
+            AdminUserName = "admin"
         };
     }
 

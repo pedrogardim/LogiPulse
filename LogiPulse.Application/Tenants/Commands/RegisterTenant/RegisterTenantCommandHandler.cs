@@ -5,7 +5,7 @@ using LogiPulse.Domain.Exceptions;
 using LogiPulse.Domain.Shared;
 using MediatR;
 
-namespace LogiPulse.Application.Tenants.Commands;
+namespace LogiPulse.Application.Tenants.Commands.RegisterTenant;
 
 public class RegisterTenantCommandHandler(
     IUserRepository userRepository,
