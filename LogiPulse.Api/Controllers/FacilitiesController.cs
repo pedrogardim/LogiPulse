@@ -1,9 +1,6 @@
 using LogiPulse.Api.Extensions;
-using LogiPulse.Application.Drivers.Commands;
-using LogiPulse.Application.Drivers.DTOs;
 using LogiPulse.Application.Facilities.Commands.CreateFacility;
-using LogiPulse.Application.Vehicles.Commands;
-using LogiPulse.Application.Vehicles.DTOs;
+using LogiPulse.Application.Facilities.Queries.ListFacilities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,8 +10,17 @@ namespace LogiPulse.Api.Controllers;
 [Route("api/[controller]")]
 public class FacilitiesController(IMediator mediator) : ControllerBase
 {
+    [HttpGet]
+    public async Task<IActionResult> ListAsync([FromQuery] ListFacilitiesQuery query)
+    {
+        var command = new ListFacilitiesQuery(query.FacilityType, query.Search, query.Page, query.PageSize);
+
+        var result = await mediator.Send(command);
+        return Ok(result);
+    }
+
     [HttpPost]
-    public async Task<IActionResult> CreateVehicleAsync([FromBody] CreateFacilityRequest request)
+    public async Task<IActionResult> CreateAsync([FromBody] CreateFacilityRequest request)
     {
         var tenantId = HttpContext.GetTenantId();
 
