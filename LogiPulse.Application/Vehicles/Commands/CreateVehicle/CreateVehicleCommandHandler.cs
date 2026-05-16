@@ -16,6 +16,9 @@ public class CreateVehicleCommandHandler(
     {
         var tenantId = userContext.TenantId;
 
+        if (tenantId == Guid.Empty)
+            throw new UnauthorizedBusinessException("Tenant context is required.");
+
         var exists = await vehicleRepository.ExistsByTenantIdAndExternalIdAsync(
             tenantId,
             request.ExternalId,

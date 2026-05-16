@@ -17,6 +17,9 @@ public class CreateFacilityCommandHandler(
     {
         var tenantId = userContext.TenantId;
 
+        if (tenantId == Guid.Empty)
+            throw new UnauthorizedBusinessException("Tenant context is required.");
+
         var existsByTenantId = await facilityRepository.ExistsByTenantIdAndExternalIdAsync(
             tenantId,
             request.ExternalId,

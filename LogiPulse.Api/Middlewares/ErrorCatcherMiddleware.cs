@@ -17,12 +17,14 @@ public class ErrorCatcherMiddleware : IMiddleware
             var (statusCode, message) = ex switch
             {
                 UnauthorizedAccessException => (StatusCodes.Status401Unauthorized, ex.Message),
+                UnauthorizedBusinessException => (StatusCodes.Status401Unauthorized, ex.Message),
                 ConflictException => (StatusCodes.Status409Conflict, ex.Message),
                 BusinessRuleException => (StatusCodes.Status422UnprocessableEntity, ex.Message),
                 ValidationException => (StatusCodes.Status400BadRequest, ex.Message),
-                _ => (StatusCodes.Status500InternalServerError, ex.Message != string.Empty ? ex.Message : "An error occurred")
+                _ => (StatusCodes.Status500InternalServerError,
+                    ex.Message != string.Empty ? ex.Message : "An error occurred")
             };
-            
+
             var problemDetails = new ProblemDetails
             {
                 Status = statusCode,
@@ -30,7 +32,7 @@ public class ErrorCatcherMiddleware : IMiddleware
                 Detail = message,
                 Type = ex.GetType().Name
             };
-            
+
             context.Response.StatusCode = problemDetails.Status ?? 500;
             await context.Response.WriteAsJsonAsync(problemDetails);
         }

@@ -18,6 +18,9 @@ public class CreateDriverCommandHandler(
     {
         var tenantId = userContext.TenantId;
 
+        if (tenantId == Guid.Empty)
+            throw new UnauthorizedBusinessException("Tenant context is required.");
+
         var exists = await driverRepository.ExistsByTenantIdAndUserIdAndExternalIdAsync(
             tenantId,
             request.UserId,
