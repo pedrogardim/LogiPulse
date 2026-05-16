@@ -10,13 +10,13 @@ public class UserService(IUserRepository userRepository, IUnitOfWork unitOfWork)
     public async Task<User> AuthAsync(Guid entraId, string email)
     {
         // 1) Find by Azure Entra ID
-        var entraUser = await userRepository.GetByEntraIdAsync(entraId);
+        var entraUser = await userRepository.ExistsByIdWithoutTenantFilterAsync(entraId);
 
         if (entraUser is not null)
             return entraUser;
 
         // 2) Check if the user was invited (user added by admin)
-        var user = await userRepository.GetByEmailAsync(Email.Create(email));
+        var user = await userRepository.GetByEmailWithoutTenantFilterAsync(Email.Create(email));
 
         if (user is null)
             throw new BusinessRuleException("User has not been invited");

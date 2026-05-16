@@ -83,7 +83,7 @@ using (var scope = app.Services.CreateScope())
     var context = services.GetRequiredService<LogiPulseDbContext>();
 
     await context.Database.MigrateAsync();
-    await DbInitializer.SeedAsync(context);
+    // await DbInitializer.SeedAsync(context);
 }
 
 app.UseHttpsRedirection();
