@@ -20,22 +20,8 @@ public class FacilitiesController(IMediator mediator) : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateAsync([FromBody] CreateFacilityRequest request)
+    public async Task<IActionResult> CreateAsync([FromBody] CreateFacilityCommand command)
     {
-        var tenantId = HttpContext.GetTenantId();
-
-        var command = new CreateFacilityCommand
-        {
-            TenantId = tenantId,
-            ExternalId = request.ExternalId,
-            Name = request.Name,
-            Code = request.Code,
-            FacilityType = request.FacilityType,
-            Latitude = request.Latitude,
-            Longitude = request.Longitude,
-            Address = request.Address
-        };
-
         var result = await mediator.Send(command);
         return Ok(result);
     }

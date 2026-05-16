@@ -6,7 +6,7 @@ using LogiPulse.Domain.Shared;
 
 namespace LogiPulse.Api.Middlewares;
 
-public class UserTenantMiddleware(IUserService userService) : IMiddleware
+public class UserTenantMiddleware(IUserService userService, IUserContext userContext) : IMiddleware
 {
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
@@ -38,14 +38,7 @@ public class UserTenantMiddleware(IUserService userService) : IMiddleware
 
         var user = await userService.AuthAsync(entraId, email);
 
-        var userContext = new UserContext
-        {
-            UserId = user.Id,
-            TenantId = user.TenantId,
-            Email = Email.Create(email)
-        };
-
-        context.Items["UserContext"] = userContext;
+        userContext.SetUser(user.Id, user.TenantId, email);
 
         await next(context);
     }

@@ -1,6 +1,4 @@
-using LogiPulse.Api.Extensions;
-using LogiPulse.Application.Drivers.Commands;
-using LogiPulse.Application.Drivers.DTOs;
+using LogiPulse.Application.Drivers.Commands.CreateDriver;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,21 +9,8 @@ namespace LogiPulse.Api.Controllers;
 public class DriversController(IMediator mediator) : ControllerBase
 {
     [HttpPost]
-    public async Task<IActionResult> CreateDriverAsync([FromBody] CreateDriverRequest request)
+    public async Task<IActionResult> CreateDriverAsync([FromBody] CreateDriverCommand command)
     {
-        var tenantId = HttpContext.GetTenantId();
-
-        var command = new CreateDriverCommand
-        {
-            TenantId = tenantId,
-            ExternalId = request.ExternalId,
-            UserId = request.UserId,
-            Name = request.Name,
-            Phone = request.Phone,
-            LicenseNumber = request.LicenseNumber,
-            LicenseExpiryDate = request.LicenseExpiryDate
-        };
-
         var result = await mediator.Send(command);
         return Ok(result);
     }

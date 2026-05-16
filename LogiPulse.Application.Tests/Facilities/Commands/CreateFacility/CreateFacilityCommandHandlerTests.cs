@@ -1,4 +1,5 @@
 using FluentAssertions;
+using LogiPulse.Application.Common;
 using LogiPulse.Application.Facilities.Commands.CreateFacility;
 using LogiPulse.Application.Interfaces;
 using LogiPulse.Domain.Entities.Facilities;
@@ -14,19 +15,23 @@ public class CreateFacilityCommandHandlerTests
     private readonly IUnitOfWork _unitOfWorkMock;
     private readonly CreateFacilityCommandHandler _handler;
     private readonly CreateFacilityCommand _command;
+    private readonly Guid _tenantId;
 
     public CreateFacilityCommandHandlerTests()
     {
         _facilityRepositoryMock = Substitute.For<IFacilityRepository>();
         _unitOfWorkMock = Substitute.For<IUnitOfWork>();
 
-        _handler = new CreateFacilityCommandHandler(_facilityRepositoryMock, _unitOfWorkMock);
+        var userContextMock = Substitute.For<IUserContext>();
+        _tenantId = Guid.CreateVersion7();
+        userContextMock.TenantId.Returns(_tenantId);
+
+        _handler = new CreateFacilityCommandHandler(_facilityRepositoryMock, userContextMock, _unitOfWorkMock);
 
         var address = new Address("Rod. Hélio Smidt", "s/n", "Guarulhos", "SP", "07190-100", "Brazil", "Aeroporto");
 
         _command = new CreateFacilityCommand
         {
-            TenantId = Guid.CreateVersion7(),
             ExternalId = "F-00001",
             Name = "Westroot Warehouse",
             Code = "0567",
@@ -49,7 +54,7 @@ public class CreateFacilityCommandHandlerTests
         var result = await _handler.Handle(_command, CancellationToken.None);
         result.Should().NotBeEmpty();
 
-        capturedFacility!.TenantId.Should().Be(_command.TenantId);
+        capturedFacility!.TenantId.Should().Be(_tenantId);
         capturedFacility!.ExternalId.Should().Be(_command.ExternalId);
         capturedFacility!.Name.Should().Be(_command.Name);
         capturedFacility!.Code.Should().Be(_command.Code);
@@ -74,7 +79,7 @@ public class CreateFacilityCommandHandlerTests
     {
         _facilityRepositoryMock
             .ExistsByTenantIdAndExternalIdAsync(
-                _command.TenantId,
+                _tenantId,
                 _command.ExternalId,
                 CancellationToken.None
             )
@@ -91,7 +96,7 @@ public class CreateFacilityCommandHandlerTests
     {
         _facilityRepositoryMock
             .ExistsByTenantIdAndCodeAsync(
-                _command.TenantId,
+                _tenantId,
                 _command.Code,
                 CancellationToken.None
             )

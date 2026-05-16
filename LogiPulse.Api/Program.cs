@@ -1,6 +1,8 @@
 using System.Text.Json.Serialization;
 using FluentValidation;
+using LogiPulse.Api.Context;
 using LogiPulse.Api.Middlewares;
+using LogiPulse.Application.Common;
 using LogiPulse.Application.Interfaces;
 using LogiPulse.Application.Users;
 using LogiPulse.Domain.Entities.Drivers;
@@ -57,6 +59,8 @@ builder.Services.AddDbContext<LogiPulseDbContext>((sp, options) =>
 
 builder.Services.AddScoped<UserTenantMiddleware>();
 builder.Services.AddScoped<ErrorCatcherMiddleware>();
+
+builder.Services.AddScoped<IUserContext, UserContext>();
 
 builder.Services.AddScoped<ITenantRepository, TenantRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
