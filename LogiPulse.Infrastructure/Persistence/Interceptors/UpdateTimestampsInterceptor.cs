@@ -7,13 +7,13 @@ namespace LogiPulse.Infrastructure.Persistence.Interceptors;
 public class UpdateTimestampsInterceptor : SaveChangesInterceptor
 {
     public override ValueTask<InterceptionResult<int>> SavingChangesAsync(
-        DbContextEventData eventData, 
+        DbContextEventData eventData,
         InterceptionResult<int> result,
-        CancellationToken cancellationToken = new CancellationToken()
-        )
+        CancellationToken cancellationToken = new()
+    )
     {
         var dbContext = eventData.Context;
-        
+
         if (dbContext is null) return base.SavingChangesAsync(eventData, result, cancellationToken);
 
         var entries = dbContext.ChangeTracker.Entries<IHasTimestamps>();
@@ -27,15 +27,10 @@ public class UpdateTimestampsInterceptor : SaveChangesInterceptor
                 entry.Entity.CreatedAtUtc = now;
                 entry.Entity.UpdatedAtUtc = now;
             }
-            
-            if (entry.State == EntityState.Modified)
-            {
-                entry.Entity.UpdatedAtUtc = now;
-            }
 
-            entry.Entity.CreatedAtUtc = now;
+            if (entry.State == EntityState.Modified) entry.Entity.UpdatedAtUtc = now;
         }
-        
+
         return base.SavingChangesAsync(eventData, result, cancellationToken);
     }
 }
