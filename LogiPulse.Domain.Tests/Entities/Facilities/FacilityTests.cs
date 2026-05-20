@@ -15,14 +15,15 @@ public class FacilityTests
     private readonly Guid _tenantId = Guid.NewGuid();
 
     private readonly Address _address =
-        new Address("Rod. Hélio Smidt", "s/n", "Guarulhos", "SP", "07190-100", "Brazil", "Aeroporto");
+        new("Rod. Hélio Smidt", "s/n", "Guarulhos", "SP", "07190-100", "Brazil", "Aeroporto");
 
-    private readonly Point _point = new Point(-46.789, -23.562) { SRID = 4326 };
+    private readonly Point _point = new(-46.789, -23.562) { SRID = 4326 };
 
     [Fact]
     public void Create_ReturnsFacility()
     {
-        var facility = Facility.Create(_tenantId, ExternalId, Name, Code, FacilityType.ProductionPlant, _address, _point);
+        var facility = Facility.Create(_tenantId, ExternalId, Name, Code, FacilityType.ProductionPlant, _address,
+            _point);
         facility.Should().NotBeNull();
 
         facility.TenantId.Should().Be(_tenantId);
@@ -82,5 +83,28 @@ public class FacilityTests
 
         act.Should().ThrowExactly<BusinessRuleException>()
             .WithMessage("Code is mandatory");
+    }
+
+    [Fact]
+    public void Update_UpdatesFacility()
+    {
+        var facility = Facility.Create(
+            _tenantId,
+            ExternalId,
+            "_",
+            "_",
+            FacilityType.DeliveryPoint,
+            new Address("_", "_", "_", "_", "_", "_", "_"),
+            new Point(0, 0));
+
+        facility.Update(Name, Code, FacilityType.ProductionPlant, _point.Y, _point.X, _address);
+
+        facility.TenantId.Should().Be(_tenantId);
+        facility.ExternalId.Should().Be(ExternalId);
+        facility.Name.Should().Be(Name);
+        facility.Code.Should().Be(Code);
+        facility.Type.Should().Be(FacilityType.ProductionPlant);
+        facility.Address.Should().Be(_address);
+        facility.Location.Should().Be(_point);
     }
 }

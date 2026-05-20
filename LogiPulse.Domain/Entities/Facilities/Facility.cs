@@ -35,18 +35,18 @@ public class Facility : Entity
         Address address,
         Point location) : base(id)
     {
-        if(tenantId == Guid.Empty)
+        if (tenantId == Guid.Empty)
             throw new BusinessRuleException("TenantId is mandatory");
-        
+
         if (string.IsNullOrWhiteSpace(externalId))
             throw new BusinessRuleException("ExternalId is mandatory");
-        
+
         if (string.IsNullOrWhiteSpace(name))
             throw new BusinessRuleException("Name is mandatory");
-        
+
         if (string.IsNullOrWhiteSpace(code))
             throw new BusinessRuleException("Code is mandatory");
-        
+
         TenantId = tenantId;
         ExternalId = externalId;
         Name = name;
@@ -68,5 +68,36 @@ public class Facility : Entity
         var id = Guid.CreateVersion7();
         var facility = new Facility(id, tenantId, externalId, name, code, type, address, location);
         return facility;
+    }
+
+    public Facility Update(
+        string? name,
+        string? code,
+        FacilityType? type,
+        double? latitude,
+        double? longitude,
+        Address? address)
+    {
+        if (!string.IsNullOrWhiteSpace(name))
+            Name = name;
+
+        if (!string.IsNullOrWhiteSpace(code))
+            Code = code;
+
+        if (type.HasValue)
+            Type = type.Value;
+
+        if (latitude.HasValue || longitude.HasValue)
+        {
+            var newLatitude = latitude ?? Location.Y;
+            var newLongitude = longitude ?? Location.Y;
+
+            Location = new Point(newLongitude, newLatitude) { SRID = 4326 };
+        }
+
+        if (address is not null)
+            Address = address;
+
+        return this;
     }
 }
