@@ -7,18 +7,13 @@ public interface IFacilityRepository
         string? search,
         int page,
         int pageSize,
-        CancellationToken cancellationToken
-    );
+        CancellationToken cancellationToken);
 
     public Task AddAsync(Facility facility, CancellationToken cancellationToken);
 
-    public Task<bool> ExistsByTenantIdAndExternalIdAsync(
-        Guid tenantId,
-        string externalId,
-        CancellationToken cancellationToken);
+    public Task<bool> ExistsByExternalIdAsync(string externalId, CancellationToken cancellationToken);
 
-    public Task<bool> ExistsByTenantIdAndCodeAsync(
-        Guid tenantId,
-        string code,
-        CancellationToken cancellationToken);
+    public Task<bool> ExistsByCodeAsync(string code, CancellationToken cancellationToken);
+
+    public Task<Facility?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 }

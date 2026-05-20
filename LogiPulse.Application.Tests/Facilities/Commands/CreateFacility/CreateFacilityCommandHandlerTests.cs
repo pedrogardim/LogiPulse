@@ -78,11 +78,7 @@ public class CreateFacilityCommandHandlerTests
     public async Task Handle_WhenFacilityAlreadyExistsWithSameExternalId_ShouldThrow()
     {
         _facilityRepositoryMock
-            .ExistsByTenantIdAndExternalIdAsync(
-                _tenantId,
-                _command.ExternalId,
-                CancellationToken.None
-            )
+            .ExistsByExternalIdAsync(_command.ExternalId, CancellationToken.None)
             .Returns(true);
 
         Func<Task> act = async () => await _handler.Handle(_command, CancellationToken.None);
@@ -95,11 +91,7 @@ public class CreateFacilityCommandHandlerTests
     public async Task Handle_WhenFacilityAlreadyExistsWithSameCode_ShouldThrow()
     {
         _facilityRepositoryMock
-            .ExistsByTenantIdAndCodeAsync(
-                _tenantId,
-                _command.Code,
-                CancellationToken.None
-            )
+            .ExistsByCodeAsync(_command.Code, CancellationToken.None)
             .Returns(true);
 
         Func<Task> act = async () => await _handler.Handle(_command, CancellationToken.None);

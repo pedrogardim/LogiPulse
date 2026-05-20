@@ -34,25 +34,18 @@ public class FacilityRepository(LogiPulseDbContext context) : IFacilityRepositor
         await context.Facilities.AddAsync(facility, cancellationToken);
     }
 
-    public async Task<bool> ExistsByTenantIdAndExternalIdAsync(
-        Guid tenantId,
-        string externalId,
-        CancellationToken cancellationToken = default)
+    public async Task<bool> ExistsByExternalIdAsync(string externalId, CancellationToken cancellationToken = default)
     {
-        return await context.Facilities.AnyAsync(d =>
-                d.TenantId == tenantId &&
-                d.ExternalId == externalId,
-            cancellationToken);
+        return await context.Facilities.AnyAsync(d => d.ExternalId == externalId, cancellationToken);
     }
 
-    public async Task<bool> ExistsByTenantIdAndCodeAsync(
-        Guid tenantId,
-        string code,
-        CancellationToken cancellationToken = default)
+    public async Task<bool> ExistsByCodeAsync(string code, CancellationToken cancellationToken = default)
     {
-        return await context.Facilities.AnyAsync(d =>
-                d.TenantId == tenantId &&
-                d.Code == code,
-            cancellationToken);
+        return await context.Facilities.AnyAsync(d => d.Code == code, cancellationToken);
+    }
+
+    public async Task<Facility?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return await context.Facilities.FirstOrDefaultAsync(d => d.Id == id, cancellationToken);
     }
 }

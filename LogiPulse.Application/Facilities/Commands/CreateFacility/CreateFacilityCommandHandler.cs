@@ -20,20 +20,12 @@ public class CreateFacilityCommandHandler(
         if (tenantId == Guid.Empty)
             throw new UnauthorizedBusinessException("Tenant context is required.");
 
-        var existsByTenantId = await facilityRepository.ExistsByTenantIdAndExternalIdAsync(
-            tenantId,
-            request.ExternalId,
-            cancellationToken
-        );
+        var existsByTenantId = await facilityRepository.ExistsByExternalIdAsync(request.ExternalId, cancellationToken);
         if (existsByTenantId)
             throw new ConflictException("A facility with that external id already exists");
 
 
-        var existsByCode = await facilityRepository.ExistsByTenantIdAndCodeAsync(
-            tenantId,
-            request.Code,
-            cancellationToken
-        );
+        var existsByCode = await facilityRepository.ExistsByCodeAsync(request.Code, cancellationToken);
 
         if (existsByCode)
             throw new ConflictException("A facility with that code already exists");
