@@ -21,6 +21,7 @@ public class ErrorCatcherMiddleware : IMiddleware
                 ConflictException => (StatusCodes.Status409Conflict, ex.Message),
                 BusinessRuleException => (StatusCodes.Status422UnprocessableEntity, ex.Message),
                 ValidationException => (StatusCodes.Status400BadRequest, ex.Message),
+                NotFoundException => (StatusCodes.Status404NotFound, ex.Message),
                 _ => (StatusCodes.Status500InternalServerError,
                     ex.Message != string.Empty ? ex.Message : "An error occurred")
             };

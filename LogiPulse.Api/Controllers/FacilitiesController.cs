@@ -1,5 +1,6 @@
 using LogiPulse.Api.Extensions;
 using LogiPulse.Application.Facilities.Commands.CreateFacility;
+using LogiPulse.Application.Facilities.Commands.UpdateFacility;
 using LogiPulse.Application.Facilities.Queries.ListFacilities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -24,5 +25,13 @@ public class FacilitiesController(IMediator mediator) : ControllerBase
     {
         var result = await mediator.Send(command);
         return Ok(result);
+    }
+
+    [HttpPatch("{id:guid}")]
+    public async Task<IActionResult> UpdateAsync(Guid id, [FromBody] UpdateFacilityCommand command)
+    {
+        command.Id = id;
+        await mediator.Send(command);
+        return NoContent();
     }
 }
