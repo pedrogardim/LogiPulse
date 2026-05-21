@@ -35,6 +35,11 @@ public class ProductRepository(LogiPulseDbContext context) : IProductRepository
         await context.Products.AddAsync(product, cancellationToken);
     }
 
+    public async Task<bool> ExistsByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return await context.Products.AnyAsync(p => p.Id == id, cancellationToken);
+    }
+
     public async Task<bool> ExistsByExternalIdAsync(string externalId, CancellationToken cancellationToken = default)
     {
         return await context.Products.AnyAsync(d => d.ExternalId == externalId, cancellationToken);

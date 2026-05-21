@@ -11,6 +11,8 @@ public interface IFacilityRepository
 
     public Task AddAsync(Facility facility, CancellationToken cancellationToken);
 
+    public Task<bool> ExistsByIdAsync(Guid id, CancellationToken cancellationToken);
+
     public Task<bool> ExistsByExternalIdAsync(string externalId, CancellationToken cancellationToken);
 
     public Task<bool> ExistsByCodeAsync(string code, CancellationToken cancellationToken);

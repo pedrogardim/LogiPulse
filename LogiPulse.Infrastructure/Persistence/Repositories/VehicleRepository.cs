@@ -10,6 +10,11 @@ public class VehicleRepository(LogiPulseDbContext context) : IVehicleRepository
         await context.Vehicles.AddAsync(vehicle, cancellationToken);
     }
 
+    public async Task<bool> ExistsByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return await context.Vehicles.AnyAsync(v => v.Id == id, cancellationToken);
+    }
+
     public async Task<bool> ExistsByTenantIdAndExternalIdAsync(
         Guid tenantId,
         string externalId,

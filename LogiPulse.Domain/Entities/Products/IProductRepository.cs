@@ -11,6 +11,8 @@ public interface IProductRepository
 
     public Task AddAsync(Product facility, CancellationToken cancellationToken);
 
+    public Task<bool> ExistsByIdAsync(Guid id, CancellationToken cancellationToken);
+
     public Task<bool> ExistsByExternalIdAsync(string externalId, CancellationToken cancellationToken);
 
     public Task<bool> ExistsByCodeAsync(string code, CancellationToken cancellationToken);

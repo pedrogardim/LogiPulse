@@ -10,6 +10,11 @@ public class DriverRepository(LogiPulseDbContext context) : IDriverRepository
         await context.Drivers.AddAsync(driver, cancellationToken);
     }
 
+    public async Task<bool> ExistsByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return await context.Drivers.AnyAsync(d => d.Id == id, cancellationToken);
+    }
+
     public async Task<bool> ExistsByTenantIdAndUserIdAndExternalIdAsync(
         Guid tenantId,
         Guid? userId,

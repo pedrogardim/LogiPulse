@@ -4,6 +4,8 @@ public interface IDriverRepository
 {
     public Task AddAsync(Driver driver, CancellationToken cancellationToken);
 
+    public Task<bool> ExistsByIdAsync(Guid id, CancellationToken cancellationToken);
+
     public Task<bool> ExistsByTenantIdAndUserIdAndExternalIdAsync(
         Guid tenantId,
         Guid? userId,
