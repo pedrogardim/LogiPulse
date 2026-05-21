@@ -7,6 +7,7 @@ using LogiPulse.Application.Interfaces;
 using LogiPulse.Application.Users;
 using LogiPulse.Domain.Entities.Drivers;
 using LogiPulse.Domain.Entities.Facilities;
+using LogiPulse.Domain.Entities.Products;
 using LogiPulse.Domain.Entities.Tenants;
 using LogiPulse.Domain.Entities.Users;
 using LogiPulse.Domain.Entities.Vehicles;
@@ -68,6 +69,8 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IDriverRepository, DriverRepository>();
 builder.Services.AddScoped<IVehicleRepository, VehicleRepository>();
 builder.Services.AddScoped<IFacilityRepository, FacilityRepository>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IProductCategoryRepository, ProductCategoryRepository>();
 
 builder.Services.AddScoped<IUserService, UserService>();
 
