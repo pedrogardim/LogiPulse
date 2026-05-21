@@ -34,4 +34,12 @@ public class ProductCategory : ProductRequirementStore
         var id = Guid.CreateVersion7();
         return new ProductCategory(id, tenantId, externalId, name);
     }
+
+    public ProductCategory Update(string? name)
+    {
+        if (!string.IsNullOrWhiteSpace(name))
+            Name = name;
+
+        return this;
+    }
 }

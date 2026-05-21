@@ -54,4 +54,18 @@ public class ProductCategoryTests
         act.Should().ThrowExactly<BusinessRuleException>()
             .WithMessage("Name is mandatory");
     }
+
+    [Fact]
+    public void Update_UpdatesProductCategory()
+    {
+        var tenantId = Guid.NewGuid();
+        var productCategory = ProductCategory.Create(tenantId, ExternalId, "_");
+
+        productCategory.Update(Name);
+
+        productCategory.TenantId.Should().Be(tenantId);
+        productCategory.ExternalId.Should().Be(ExternalId);
+
+        productCategory.Name.Should().Be(Name);
+    }
 }
