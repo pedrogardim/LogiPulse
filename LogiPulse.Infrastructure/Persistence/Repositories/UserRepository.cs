@@ -30,4 +30,14 @@ public class UserRepository(LogiPulseDbContext context) : IUserRepository
     {
         return await context.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Email == email);
     }
+
+    public async Task<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    {
+        return await context.Users.FirstOrDefaultAsync(d => d.Id == id, cancellationToken);
+    }
+
+    public void Remove(User user)
+    {
+        context.Users.Remove(user);
+    }
 }

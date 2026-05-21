@@ -11,4 +11,7 @@ public interface IUserRepository
 
     public Task<User?> ExistsByIdWithoutTenantFilterAsync(Guid entraId);
     public Task<User?> GetByEmailWithoutTenantFilterAsync(Email email);
+
+    public Task<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+    public void Remove(User user);
 }
