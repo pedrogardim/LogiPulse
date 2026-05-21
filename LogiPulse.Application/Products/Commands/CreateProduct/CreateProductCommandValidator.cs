@@ -26,7 +26,8 @@ public class CreateProductCommandValidator : AbstractValidator<CreateProductComm
             .WithMessage("Code should have at most 50 characters");
 
         RuleFor(x => x.CategoryId)
-            .Must(id => id != Guid.Empty)
-            .WithMessage("CategoryId must be null or a non-empty Guid");
+            .Must(x => x != Guid.Empty)
+            .When(x => x.CategoryId is not null)
+            .WithMessage("CategoryId cannot be empty.");
     }
 }
