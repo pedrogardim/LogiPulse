@@ -1,6 +1,5 @@
 using FluentAssertions;
 using LogiPulse.Application.Common;
-using LogiPulse.Application.Facilities.Commands.CreateFacility;
 using LogiPulse.Application.Facilities.Commands.UpdateFacility;
 using LogiPulse.Application.Interfaces;
 using LogiPulse.Domain.Entities.Facilities;

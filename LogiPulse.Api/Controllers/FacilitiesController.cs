@@ -15,9 +15,7 @@ public class FacilitiesController(IMediator mediator) : ControllerBase
     [HttpGet]
     public async Task<IActionResult> ListAsync([FromQuery] ListFacilitiesQuery query)
     {
-        var command = new ListFacilitiesQuery(query.FacilityType, query.Search, query.Page, query.PageSize);
-
-        var result = await mediator.Send(command);
+        var result = await mediator.Send(query);
         return Ok(result);
     }
 
