@@ -22,4 +22,14 @@ public class DriverRepository(LogiPulseDbContext context) : IDriverRepository
                 d.ExternalId == externalId,
             cancellationToken);
     }
+
+    public async Task<Driver?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    {
+        return await context.Drivers.FirstOrDefaultAsync(d => d.Id == id, cancellationToken);
+    }
+
+    public void Remove(Driver driver)
+    {
+        context.Drivers.Remove(driver);
+    }
 }

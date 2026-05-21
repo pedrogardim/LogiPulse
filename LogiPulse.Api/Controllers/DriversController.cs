@@ -1,4 +1,5 @@
 using LogiPulse.Application.Drivers.Commands.CreateDriver;
+using LogiPulse.Application.Drivers.Commands.DeleteDriver;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,5 +14,12 @@ public class DriversController(IMediator mediator) : ControllerBase
     {
         var result = await mediator.Send(command);
         return Ok(result);
+    }
+
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> DeleteDriverAsync(Guid id)
+    {
+        await mediator.Send(new DeleteDriverCommand(id));
+        return NoContent();
     }
 }

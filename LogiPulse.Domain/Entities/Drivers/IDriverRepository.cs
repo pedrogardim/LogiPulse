@@ -9,4 +9,8 @@ public interface IDriverRepository
         Guid? userId,
         string externalId,
         CancellationToken cancellationToken);
+
+    public Task<Driver?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+
+    public void Remove(Driver driver);
 }
