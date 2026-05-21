@@ -20,4 +20,14 @@ public class VehicleRepository(LogiPulseDbContext context) : IVehicleRepository
                 d.ExternalId == externalId,
             cancellationToken);
     }
+
+    public async Task<Vehicle?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    {
+        return await context.Vehicles.FirstOrDefaultAsync(d => d.Id == id, cancellationToken);
+    }
+
+    public void Remove(Vehicle vehicle)
+    {
+        context.Vehicles.Remove(vehicle);
+    }
 }

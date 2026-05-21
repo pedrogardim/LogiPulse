@@ -8,4 +8,8 @@ public interface IVehicleRepository
         Guid tenantId,
         string externalId,
         CancellationToken cancellationToken);
+
+    public Task<Vehicle?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+
+    public void Remove(Vehicle vehicle);
 }
