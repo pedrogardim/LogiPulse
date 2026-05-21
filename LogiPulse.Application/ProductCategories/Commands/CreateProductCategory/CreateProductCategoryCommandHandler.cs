@@ -23,7 +23,7 @@ public class CreateProductCategoryCommandHandler(
             await productCategoryRepository.ExistsByExternalIdAsync(request.ExternalId, cancellationToken);
 
         if (existsByTenantId)
-            throw new ConflictException("A product with that external id already exists");
+            throw new ConflictException("A product category with that external id already exists");
 
         var productCategory = ProductCategory.Create(
             tenantId,

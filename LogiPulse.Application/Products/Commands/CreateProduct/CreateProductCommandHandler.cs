@@ -31,8 +31,8 @@ public class CreateProductCommandHandler(
         var product = Product.Create(
             tenantId,
             request.ExternalId,
-            request.Name,
             request.Code,
+            request.Name,
             request.CategoryId
         );
 

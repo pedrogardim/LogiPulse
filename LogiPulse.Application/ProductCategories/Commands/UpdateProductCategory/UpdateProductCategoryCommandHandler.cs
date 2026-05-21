@@ -21,7 +21,7 @@ public class UpdateProductCategoryCommandHandler(
 
         var productCategory = await productCategoryRepository.GetByIdAsync(request.Id, cancellationToken);
         if (productCategory is null)
-            throw new NotFoundException("Product not found");
+            throw new NotFoundException("Product category not found");
 
         productCategory.Update(request.Name);
 

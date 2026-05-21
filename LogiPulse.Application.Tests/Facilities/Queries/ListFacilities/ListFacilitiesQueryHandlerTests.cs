@@ -1,4 +1,3 @@
-using System.Runtime.InteropServices.JavaScript;
 using FluentAssertions;
 using LogiPulse.Application.Facilities.Queries.ListFacilities;
 using LogiPulse.Domain.Entities.Facilities;
