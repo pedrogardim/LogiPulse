@@ -48,4 +48,9 @@ public class FacilityRepository(LogiPulseDbContext context) : IFacilityRepositor
     {
         return await context.Facilities.FirstOrDefaultAsync(d => d.Id == id, cancellationToken);
     }
+
+    public void Remove(Facility facility)
+    {
+        context.Facilities.Remove(facility);
+    }
 }

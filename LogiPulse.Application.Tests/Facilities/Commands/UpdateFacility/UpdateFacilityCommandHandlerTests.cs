@@ -77,7 +77,6 @@ public class UpdateFacilityCommandHandlerTests
         await _unitOfWorkMock.Received(1).CommitAsync(Arg.Any<CancellationToken>());
     }
 
-
     [Fact]
     public async Task Handle_WhenFacilityDontExist_ShouldThrow()
     {

@@ -16,4 +16,6 @@ public interface IFacilityRepository
     public Task<bool> ExistsByCodeAsync(string code, CancellationToken cancellationToken);
 
     public Task<Facility?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+
+    public void Remove(Facility facility);
 }
