@@ -14,7 +14,7 @@ public class DriverTests
 
     private Guid _tenantId = Guid.NewGuid();
     private Guid _userId = Guid.NewGuid();
-    private DateOnly _licenseExpiryDate = new DateOnly(2030, 1, 1);
+    private DateOnly _licenseExpiryDate = new(2030, 1, 1);
 
     [Fact]
     public void Create_ReturnsDriver()
@@ -49,7 +49,7 @@ public class DriverTests
             Driver.Create(_tenantId, Guid.Empty, ExternalId, Name, Phone, LicenseNumber, _licenseExpiryDate);
 
         act.Should().ThrowExactly<BusinessRuleException>()
-            .WithMessage("UserId is mandatory");
+            .WithMessage("UserId must be null or a non-empty Guid");
     }
 
     [Theory]
