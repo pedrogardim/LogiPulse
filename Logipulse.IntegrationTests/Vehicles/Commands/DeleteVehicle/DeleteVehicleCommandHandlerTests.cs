@@ -1,51 +1,33 @@
 using FluentAssertions;
-using LogiPulse.Application.Common;
 using LogiPulse.Application.Vehicles.Commands.DeleteVehicle;
-using LogiPulse.Application.Interfaces;
+using LogiPulse.Application.Vehicles.Commands.CreateVehicle;
 using LogiPulse.Domain.Entities.Vehicles;
 using LogiPulse.Domain.Exceptions;
-using NSubstitute;
+using Logipulse.IntegrationTests.Setup;
+using Microsoft.EntityFrameworkCore;
 
 namespace LogiPulse.IntegrationTests.Vehicles.Commands.DeleteVehicle;
 
-public class DeleteVehicleCommandHandlerTests
+public class DeleteVehicleCommandHandlerTests(IntegrationTestWebAppFactory factory) : BaseIntegrationTest(factory)
 {
-    private readonly IVehicleRepository _vehicleRepositoryMock;
-    private readonly IUnitOfWork _unitOfWorkMock;
-    private readonly DeleteVehicleCommandHandler _handler;
-    private readonly Guid _tenantId;
-
-    public DeleteVehicleCommandHandlerTests()
-    {
-        _vehicleRepositoryMock = Substitute.For<IVehicleRepository>();
-        _unitOfWorkMock = Substitute.For<IUnitOfWork>();
-
-        var userContextMock = Substitute.For<IUserContext>();
-        _tenantId = Guid.CreateVersion7();
-        userContextMock.TenantId.Returns(_tenantId);
-
-        _handler = new DeleteVehicleCommandHandler(
-            _vehicleRepositoryMock,
-            userContextMock,
-            _unitOfWorkMock);
-    }
-
     [Fact]
     public async Task Handle_WhenValid_ShouldDeleteVehicleAndCommits()
     {
-        var vehicle = Vehicle.Create(_tenantId, "D-01", "Vehicle", "123", VehicleType.BoxTruck);
+        var createCommand = new CreateVehicleCommand
+        {
+            ExternalId = "V-00001",
+            Name = "Pedro",
+            LicensePlate = "8310XY",
+            VehicleType = VehicleType.SemiTruck
+        };
 
-        var command = new DeleteVehicleCommand(vehicle.Id);
+        var vehicleId = await Sender.Send(createCommand);
+        vehicleId.Should().NotBeEmpty();
 
-        _vehicleRepositoryMock
-            .GetByIdAsync(vehicle.Id, Arg.Any<CancellationToken>())
-            .Returns(vehicle);
+        await Sender.Send(new DeleteVehicleCommand(vehicleId));
 
-        await _handler.Handle(command, CancellationToken.None);
-
-        _vehicleRepositoryMock.Received(1).Remove(vehicle);
-
-        await _unitOfWorkMock.Received(1).CommitAsync(Arg.Any<CancellationToken>());
+        var result = await DbContext.Vehicles.AnyAsync(v => v.Id == vehicleId);
+        result.Should().BeFalse();
     }
 
     [Fact]
@@ -53,11 +35,7 @@ public class DeleteVehicleCommandHandlerTests
     {
         var id = Guid.CreateVersion7();
 
-        _vehicleRepositoryMock
-            .GetByIdAsync(id, Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult<Vehicle?>(null));
-
-        var act = async () => await _handler.Handle(new DeleteVehicleCommand(id), CancellationToken.None);
+        var act = async () => await Sender.Send(new DeleteVehicleCommand(id));
 
         await act.Should().ThrowAsync<NotFoundException>()
             .WithMessage("*Vehicle don't exist*");

@@ -8,11 +8,15 @@ public class RegisterTenantCommandValidator : AbstractValidator<RegisterTenantCo
     {
         RuleFor(x => x.TaxCode)
             .NotEmpty()
-            .WithMessage("TaxCode is mandatory");
+            .WithMessage("TaxCode is mandatory")
+            .Length(1, 30)
+            .WithMessage("TaxCode length should be between 1 and 30");
 
         RuleFor(x => x.DisplayName)
             .NotEmpty()
-            .WithMessage("DisplayName is mandatory");
+            .WithMessage("DisplayName is mandatory")
+            .Length(1, 30)
+            .WithMessage("DisplayName length should be between 1 and 100");
 
         RuleFor(x => x.AdminUserEntraId)
             .NotEmpty()

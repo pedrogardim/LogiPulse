@@ -1,67 +1,48 @@
 using FluentAssertions;
-using LogiPulse.Application.Common;
-using LogiPulse.Application.Interfaces;
 using LogiPulse.Application.Products.Commands.UpdateProduct;
 using LogiPulse.Domain.Entities.Products;
 using LogiPulse.Domain.Exceptions;
-using NSubstitute;
+using Logipulse.IntegrationTests.Setup;
+using Microsoft.EntityFrameworkCore;
 
 namespace LogiPulse.IntegrationTests.Products.Commands.UpdateProduct;
 
-public class UpdateProductCommandHandlerTests
+public class UpdateProductCommandHandlerTests(IntegrationTestWebAppFactory factory) : BaseIntegrationTest(factory)
 {
-    private readonly IProductRepository _productRepositoryMock;
-    private readonly IUnitOfWork _unitOfWorkMock;
-    private readonly UpdateProductCommandHandler _handler;
-    private readonly UpdateProductCommand _command;
-    private readonly Guid _tenantId = Guid.CreateVersion7();
-    private readonly Guid _productCategoryId = Guid.CreateVersion7();
-
-    public UpdateProductCommandHandlerTests()
-    {
-        _productRepositoryMock = Substitute.For<IProductRepository>();
-        _unitOfWorkMock = Substitute.For<IUnitOfWork>();
-
-        var userContextMock = Substitute.For<IUserContext>();
-        userContextMock.TenantId.Returns(_tenantId);
-
-        _handler = new UpdateProductCommandHandler(_productRepositoryMock, userContextMock,
-            _unitOfWorkMock);
-
-        _command = new UpdateProductCommand
-        {
-            Name = "Westroot Warehouse"
-        };
-    }
-
     [Fact]
-    public async Task Handle_WhenValid_UpdatesProductAndCommits()
+    public async Task Handle_WhenValid_UpdatesProduct()
     {
-        var product = Product.Create(Guid.CreateVersion7(), "D-01", "3791", "Product", _productCategoryId);
+        var product = Product.Create(UserContext.TenantId, Guid.CreateVersion7().ToString()[0..15], "3791", "Product");
 
+        await DbContext.Products.AddAsync(product);
+        await DbContext.SaveChangesAsync();
 
-        _command.Id = product.Id;
+        var command = new UpdateProductCommand
+        {
+            Id = product.Id,
+            Name = "Westroot Warehouse",
+            Code = "12345"
+        };
 
-        _productRepositoryMock
-            .GetByIdAsync(product.Id, Arg.Any<CancellationToken>())
-            .Returns(product);
+        await Sender.Send(command);
 
-        var result = await _handler.Handle(_command, CancellationToken.None);
+        var retrievedProduct = await DbContext.Products.FirstOrDefaultAsync(p => p.Id == product.Id);
 
-        result.Should().NotBeNull();
-        result.Name.Should().Be(_command.Name);
-
-        await _unitOfWorkMock.Received(1).CommitAsync(Arg.Any<CancellationToken>());
+        retrievedProduct.Should().NotBeNull();
+        retrievedProduct!.Name.Should().Be(command.Name);
+        retrievedProduct!.Code.Should().Be(command.Code);
     }
 
     [Fact]
     public async Task Handle_WhenProductDontExist_ShouldThrow()
     {
-        _productRepositoryMock
-            .GetByIdAsync(_command.Id, Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult<Product?>(null));
+        var command = new UpdateProductCommand
+        {
+            Id = Guid.CreateVersion7(),
+            Name = "Westroot Warehouse"
+        };
 
-        Func<Task> act = async () => await _handler.Handle(_command, CancellationToken.None);
+        Func<Task> act = async () => await Sender.Send(command);
 
         await act.Should().ThrowAsync<NotFoundException>()
             .WithMessage("*Product not found*");

@@ -1,70 +1,51 @@
 using FluentAssertions;
-using LogiPulse.Application.Common;
-using LogiPulse.Application.Interfaces;
 using LogiPulse.Application.ProductCategories.Commands.UpdateProductCategory;
 using LogiPulse.Domain.Entities.Products;
 using LogiPulse.Domain.Exceptions;
-using NSubstitute;
+using Logipulse.IntegrationTests.Setup;
+using Microsoft.EntityFrameworkCore;
 
 namespace LogiPulse.IntegrationTests.ProductCategories.Commands.UpdateProductCategory;
 
-public class UpdateProductCategoryCommandHandlerTests
+public class UpdateProductCategoryCommandHandlerTests(IntegrationTestWebAppFactory factory)
+    : BaseIntegrationTest(factory)
 {
-    private readonly IProductCategoryRepository _productCategoryRepositoryMock;
-    private readonly IUnitOfWork _unitOfWorkMock;
-    private readonly UpdateProductCategoryCommandHandler _handler;
-    private readonly UpdateProductCategoryCommand _command;
-    private readonly Guid _tenantId;
-
-    public UpdateProductCategoryCommandHandlerTests()
-    {
-        _productCategoryRepositoryMock = Substitute.For<IProductCategoryRepository>();
-        _unitOfWorkMock = Substitute.For<IUnitOfWork>();
-
-        var userContextMock = Substitute.For<IUserContext>();
-        _tenantId = Guid.CreateVersion7();
-        userContextMock.TenantId.Returns(_tenantId);
-
-        _handler = new UpdateProductCategoryCommandHandler(_productCategoryRepositoryMock, userContextMock,
-            _unitOfWorkMock);
-
-        _command = new UpdateProductCategoryCommand
-        {
-            Name = "Westroot Warehouse"
-        };
-    }
-
     [Fact]
-    public async Task Handle_WhenValid_UpdatesProductCategoryAndCommits()
+    public async Task Handle_WhenValid_UpdatesProductCategory()
     {
         var productCategory = ProductCategory.Create(
-            _tenantId,
-            "ID-0001",
-            "Old Name"
-        );
+            UserContext.TenantId,
+            Guid.CreateVersion7().ToString()[0..15],
+            Guid.CreateVersion7().ToString()[0..8]);
 
-        _command.Id = productCategory.Id;
+        await DbContext.ProductCategories.AddAsync(productCategory);
+        await DbContext.SaveChangesAsync();
 
-        _productCategoryRepositoryMock
-            .GetByIdAsync(productCategory.Id, Arg.Any<CancellationToken>())
-            .Returns(productCategory);
+        var command = new UpdateProductCategoryCommand
+        {
+            Id = productCategory.Id,
+            Name = "Some other category"
+        };
 
-        var result = await _handler.Handle(_command, CancellationToken.None);
+        await Sender.Send(command);
 
-        result.Should().NotBeNull();
-        result.Name.Should().Be(_command.Name);
+        var retrievedProductCategory =
+            await DbContext.ProductCategories.FirstOrDefaultAsync(p => p.Id == productCategory.Id);
 
-        await _unitOfWorkMock.Received(1).CommitAsync(Arg.Any<CancellationToken>());
+        retrievedProductCategory.Should().NotBeNull();
+        retrievedProductCategory!.Name.Should().Be(command.Name);
     }
 
     [Fact]
     public async Task Handle_WhenProductCategoryDontExist_ShouldThrow()
     {
-        _productCategoryRepositoryMock
-            .GetByIdAsync(_command.Id, Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult<ProductCategory?>(null));
+        var command = new UpdateProductCategoryCommand
+        {
+            Id = Guid.CreateVersion7(),
+            Name = "Some other category"
+        };
 
-        Func<Task> act = async () => await _handler.Handle(_command, CancellationToken.None);
+        Func<Task> act = async () => await Sender.Send(command);
 
         await act.Should().ThrowAsync<NotFoundException>()
             .WithMessage("*Product category not found*");

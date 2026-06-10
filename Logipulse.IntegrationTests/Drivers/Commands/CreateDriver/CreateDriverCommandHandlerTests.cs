@@ -1,76 +1,42 @@
 using FluentAssertions;
-using LogiPulse.Application.Common;
 using LogiPulse.Application.Drivers.Commands.CreateDriver;
-using LogiPulse.Application.Interfaces;
 using LogiPulse.Domain.Entities.Drivers;
-using LogiPulse.Domain.Entities.Users;
 using LogiPulse.Domain.Exceptions;
+using Logipulse.IntegrationTests.Setup;
+using Microsoft.EntityFrameworkCore;
 using NSubstitute;
 
 namespace LogiPulse.IntegrationTests.Drivers.Commands.CreateDriver;
 
-public class CreateDriverCommandHandlerTests
+public class CreateDriverCommandHandlerTests(IntegrationTestWebAppFactory factory) : BaseIntegrationTest(factory)
 {
-    private readonly IDriverRepository _driverRepositoryMock;
-    private readonly IUserRepository _userRepositoryMock;
-    private readonly IUnitOfWork _unitOfWorkMock;
-    private readonly CreateDriverCommandHandler _handler;
-    private readonly Guid _tenantId;
-
-    public CreateDriverCommandHandlerTests()
-    {
-        _driverRepositoryMock = Substitute.For<IDriverRepository>();
-        _userRepositoryMock = Substitute.For<IUserRepository>();
-        _unitOfWorkMock = Substitute.For<IUnitOfWork>();
-
-        var userContextMock = Substitute.For<IUserContext>();
-        _tenantId = Guid.CreateVersion7();
-        userContextMock.TenantId.Returns(_tenantId);
-
-        _handler = new CreateDriverCommandHandler(
-            _driverRepositoryMock,
-            _userRepositoryMock,
-            userContextMock,
-            _unitOfWorkMock);
-    }
-
     [Fact]
     public async Task Handle_ShouldCreateDriver()
     {
+        var randomUser = await DbContext.Users.FirstAsync();
         var command = new CreateDriverCommand
         {
-            ExternalId = "D-00001",
-            UserId = Guid.CreateVersion7(),
+            ExternalId = Guid.NewGuid().ToString()[0..8],
+            UserId = randomUser.Id,
             Name = "Pedro",
             Phone = "12345678",
-            LicenseNumber = "8310XY",
+            LicenseNumber = Guid.NewGuid().ToString()[0..8],
             LicenseExpiryDate = DateOnly.MaxValue
         };
 
-        Driver? capturedDriver = null;
+        var driverId = await Sender.Send(command);
+        driverId.Should().NotBeEmpty();
 
-        _userRepositoryMock
-            .ExistsByIdAsync(command.UserId.Value)
-            .Returns(true);
+        var driver = await DbContext.Drivers.FirstOrDefaultAsync(d => d.Id == driverId);
+        driver.Should().NotBeNull();
 
-        _driverRepositoryMock
-            .When(x => x.AddAsync(Arg.Any<Driver>(), CancellationToken.None))
-            .Do(callInfo => capturedDriver = callInfo.Arg<Driver>());
-
-        var result = await _handler.Handle(command, CancellationToken.None);
-        result.Should().NotBeEmpty();
-
-        capturedDriver!.TenantId.Should().Be(_tenantId);
-        capturedDriver!.ExternalId.Should().Be(command.ExternalId);
-        capturedDriver!.UserId.Should().Be(command.UserId);
-        capturedDriver!.Name.Should().Be(command.Name);
-        capturedDriver!.Phone.Should().Be(command.Phone);
-        capturedDriver!.LicenseNumber.Should().Be(command.LicenseNumber);
-        capturedDriver!.LicenseExpiryDate.Should().Be(command.LicenseExpiryDate);
-
-        capturedDriver.Should().NotBeNull();
-
-        await _unitOfWorkMock.Received(1).CommitAsync(Arg.Any<CancellationToken>());
+        driver!.TenantId.Should().Be(UserContext.TenantId);
+        driver!.ExternalId.Should().Be(command.ExternalId);
+        driver!.UserId.Should().Be(command.UserId);
+        driver!.Name.Should().Be(command.Name);
+        driver!.Phone.Should().Be(command.Phone);
+        driver!.LicenseNumber.Should().Be(command.LicenseNumber);
+        driver!.LicenseExpiryDate.Should().Be(command.LicenseExpiryDate);
     }
 
     [Fact]
@@ -78,33 +44,26 @@ public class CreateDriverCommandHandlerTests
     {
         var command = new CreateDriverCommand
         {
-            ExternalId = "D-00001",
+            ExternalId = Guid.NewGuid().ToString()[0..8],
             Name = "Pedro",
             Phone = "12345678",
-            LicenseNumber = "8310XY",
+            LicenseNumber = Guid.NewGuid().ToString()[0..8],
             LicenseExpiryDate = DateOnly.MaxValue
         };
 
-        Driver? capturedDriver = null;
+        var driverId = await Sender.Send(command);
+        driverId.Should().NotBeEmpty();
 
-        _driverRepositoryMock
-            .When(x => x.AddAsync(Arg.Any<Driver>(), CancellationToken.None))
-            .Do(callInfo => capturedDriver = callInfo.Arg<Driver>());
+        var driver = await DbContext.Drivers.FirstOrDefaultAsync(d => d.Id == driverId);
+        driver.Should().NotBeNull();
 
-        var result = await _handler.Handle(command, CancellationToken.None);
-        result.Should().NotBeEmpty();
-
-        capturedDriver!.TenantId.Should().Be(_tenantId);
-        capturedDriver!.ExternalId.Should().Be(command.ExternalId);
-        capturedDriver!.UserId.Should().BeNull();
-        capturedDriver!.Name.Should().Be(command.Name);
-        capturedDriver!.Phone.Should().Be(command.Phone);
-        capturedDriver!.LicenseNumber.Should().Be(command.LicenseNumber);
-        capturedDriver!.LicenseExpiryDate.Should().Be(command.LicenseExpiryDate);
-
-        capturedDriver.Should().NotBeNull();
-
-        await _unitOfWorkMock.Received(1).CommitAsync(Arg.Any<CancellationToken>());
+        driver!.TenantId.Should().Be(UserContext.TenantId);
+        driver!.ExternalId.Should().Be(command.ExternalId);
+        driver!.UserId.Should().BeNull();
+        driver!.Name.Should().Be(command.Name);
+        driver!.Phone.Should().Be(command.Phone);
+        driver!.LicenseNumber.Should().Be(command.LicenseNumber);
+        driver!.LicenseExpiryDate.Should().Be(command.LicenseExpiryDate);
     }
 
     [Fact]
@@ -112,15 +71,15 @@ public class CreateDriverCommandHandlerTests
     {
         var command = new CreateDriverCommand
         {
-            ExternalId = "D-00001",
+            ExternalId = Guid.NewGuid().ToString()[0..8],
             UserId = Guid.CreateVersion7(),
             Name = "Pedro",
             Phone = "12345678",
-            LicenseNumber = "8310XY",
+            LicenseNumber = Guid.NewGuid().ToString()[0..8],
             LicenseExpiryDate = DateOnly.MaxValue
         };
 
-        Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
+        Func<Task> act = async () => await Sender.Send(command);
 
         await act.Should().ThrowAsync<BusinessRuleException>().WithMessage("*Given user doesn't exist*");
     }
@@ -130,24 +89,16 @@ public class CreateDriverCommandHandlerTests
     {
         var command = new CreateDriverCommand
         {
-            ExternalId = "D-00001",
-            UserId = Guid.CreateVersion7(),
+            ExternalId = Guid.NewGuid().ToString()[0..8],
             Name = "Pedro",
             Phone = "12345678",
-            LicenseNumber = "8310XY",
+            LicenseNumber = Guid.NewGuid().ToString()[0..8],
             LicenseExpiryDate = DateOnly.MaxValue
         };
 
-        _driverRepositoryMock
-            .ExistsByTenantIdAndUserIdAndExternalIdAsync(
-                _tenantId,
-                command.UserId,
-                command.ExternalId,
-                CancellationToken.None
-            )
-            .Returns(true);
+        await Sender.Send(command);
 
-        Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
+        Func<Task> act = async () => await Sender.Send(command);
 
         await act.Should().ThrowAsync<ConflictException>().WithMessage("*Driver already exists*");
     }

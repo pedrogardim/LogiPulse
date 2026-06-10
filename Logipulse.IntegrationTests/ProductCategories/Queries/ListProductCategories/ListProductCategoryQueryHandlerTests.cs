@@ -1,45 +1,26 @@
 using FluentAssertions;
 using LogiPulse.Application.ProductCategories.Queries.ListProductCategories;
+using LogiPulse.Application.Products.Queries.ListProducts;
 using LogiPulse.Domain.Entities.Products;
+using Logipulse.IntegrationTests.Setup;
 using NSubstitute;
 
 namespace LogiPulse.IntegrationTests.ProductCategories.Queries.ListProductCategories;
 
-public class ListProductCategoriesQueryHandlerTests
+public class ListProductCategoriesQueryHandlerTests(IntegrationTestWebAppFactory factory) : BaseIntegrationTest(factory)
 {
-    private readonly IProductCategoryRepository _productCategoryRepositoryMock;
-    private readonly ListProductCategoriesQueryHandler _handler;
-    private readonly ListProductCategoriesQuery _query;
-
-    public ListProductCategoriesQueryHandlerTests()
-    {
-        _productCategoryRepositoryMock = Substitute.For<IProductCategoryRepository>();
-
-        _handler = new ListProductCategoriesQueryHandler(_productCategoryRepositoryMock);
-
-        _query = new ListProductCategoriesQuery(
-            "Some ProductCategory",
-            1,
-            20
-        );
-    }
-
     [Fact]
     public async Task Handle_ShouldReturnProductCategoryItems()
     {
-        var productCategory = ProductCategory.Create(Guid.CreateVersion7(), "D-01", "ProductCategory");
+        var productCategory = ProductCategory.Create(UserContext.TenantId, Guid.NewGuid().ToString()[0..8],
+            Guid.NewGuid().ToString()[0..8]);
 
-        IReadOnlyList<ProductCategory> facilities = [productCategory];
+        await DbContext.ProductCategories.AddAsync(productCategory);
+        await DbContext.SaveChangesAsync();
 
-        _productCategoryRepositoryMock.ListAsync(
-                _query.Search,
-                _query.Page,
-                _query.PageSize,
-                Arg.Any<CancellationToken>()
-            )
-            .Returns(facilities);
+        var query = new ListProductCategoriesQuery(productCategory.Name);
 
-        var result = await _handler.Handle(_query, CancellationToken.None);
+        var result = await Sender.Send(query);
 
         result.Should().BeOfType<List<ListProductCategoriesItemResponse>>();
 
@@ -48,12 +29,5 @@ public class ListProductCategoriesQueryHandlerTests
         result[0].Id.Should().Be(productCategory.Id);
         result[0].ExternalId.Should().Be(productCategory.ExternalId);
         result[0].Name.Should().Be(productCategory.Name);
-
-        await _productCategoryRepositoryMock.Received(1).ListAsync(
-            _query.Search,
-            _query.Page,
-            _query.PageSize,
-            Arg.Any<CancellationToken>()
-        );
     }
 }

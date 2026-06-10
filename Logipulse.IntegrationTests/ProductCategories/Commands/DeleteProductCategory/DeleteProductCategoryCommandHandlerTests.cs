@@ -1,52 +1,31 @@
 using FluentAssertions;
-using LogiPulse.Application.Common;
-using LogiPulse.Application.Interfaces;
 using LogiPulse.Application.ProductCategories.Commands.DeleteProductCategory;
 using LogiPulse.Domain.Entities.Products;
 using LogiPulse.Domain.Exceptions;
-using LogiPulse.Domain.Shared;
-using NSubstitute;
+using Logipulse.IntegrationTests.Setup;
+using Microsoft.EntityFrameworkCore;
 
 namespace LogiPulse.IntegrationTests.ProductCategories.Commands.DeleteProductCategory;
 
-public class DeleteProductCategoryCommandHandlerTests
+public class DeleteProductCategoryCommandHandlerTests(IntegrationTestWebAppFactory factory)
+    : BaseIntegrationTest(factory)
 {
-    private readonly IProductCategoryRepository _facilityRepositoryMock;
-    private readonly IUnitOfWork _unitOfWorkMock;
-    private readonly DeleteProductCategoryCommandHandler _handler;
-    private readonly Guid _tenantId;
-
-    public DeleteProductCategoryCommandHandlerTests()
-    {
-        _facilityRepositoryMock = Substitute.For<IProductCategoryRepository>();
-        _unitOfWorkMock = Substitute.For<IUnitOfWork>();
-
-        var userContextMock = Substitute.For<IUserContext>();
-        _tenantId = Guid.CreateVersion7();
-        userContextMock.TenantId.Returns(_tenantId);
-
-        _handler = new DeleteProductCategoryCommandHandler(
-            _facilityRepositoryMock,
-            userContextMock,
-            _unitOfWorkMock);
-    }
-
     [Fact]
     public async Task Handle_WhenValid_ShouldDeleteProductCategoryAndCommits()
     {
-        var facility = ProductCategory.Create(_tenantId, "D-01", "Category");
+        var productCategory = ProductCategory.Create(
+            UserContext.TenantId,
+            Guid.NewGuid().ToString()[0..8],
+            "Some Category");
 
-        var command = new DeleteProductCategoryCommand(facility.Id);
+        await DbContext.ProductCategories.AddAsync(productCategory);
+        await DbContext.SaveChangesAsync();
 
-        _facilityRepositoryMock
-            .GetByIdAsync(facility.Id, Arg.Any<CancellationToken>())
-            .Returns(facility);
+        var command = new DeleteProductCategoryCommand(productCategory.Id);
+        await Sender.Send(command);
 
-        await _handler.Handle(command, CancellationToken.None);
-
-        _facilityRepositoryMock.Received(1).Remove(facility);
-
-        await _unitOfWorkMock.Received(1).CommitAsync(Arg.Any<CancellationToken>());
+        var result = await DbContext.ProductCategories.FirstOrDefaultAsync(p => p.Id == productCategory.Id);
+        result.Should().BeNull();
     }
 
     [Fact]
@@ -54,11 +33,7 @@ public class DeleteProductCategoryCommandHandlerTests
     {
         var id = Guid.CreateVersion7();
 
-        _facilityRepositoryMock
-            .GetByIdAsync(id, Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult<ProductCategory?>(null));
-
-        var act = async () => await _handler.Handle(new DeleteProductCategoryCommand(id), CancellationToken.None);
+        var act = async () => await Sender.Send(new DeleteProductCategoryCommand(id));
 
         await act.Should().ThrowAsync<NotFoundException>()
             .WithMessage("*Product category don't exist*");

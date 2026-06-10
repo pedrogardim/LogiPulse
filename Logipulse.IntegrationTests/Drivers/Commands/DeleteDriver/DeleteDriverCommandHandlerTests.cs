@@ -4,60 +4,43 @@ using LogiPulse.Application.Drivers.Commands.DeleteDriver;
 using LogiPulse.Application.Interfaces;
 using LogiPulse.Domain.Entities.Drivers;
 using LogiPulse.Domain.Exceptions;
+using Logipulse.IntegrationTests.Setup;
+using Microsoft.EntityFrameworkCore;
 using NSubstitute;
 
 namespace LogiPulse.IntegrationTests.Drivers.Commands.DeleteDriver;
 
-public class DeleteDriverCommandHandlerTests
+public class DeleteDriverCommandHandlerTests(IntegrationTestWebAppFactory factory) : BaseIntegrationTest(factory)
 {
-    private readonly IDriverRepository _driverRepositoryMock;
-    private readonly IUnitOfWork _unitOfWorkMock;
-    private readonly DeleteDriverCommandHandler _handler;
-    private readonly Guid _tenantId;
-
-    public DeleteDriverCommandHandlerTests()
-    {
-        _driverRepositoryMock = Substitute.For<IDriverRepository>();
-        _unitOfWorkMock = Substitute.For<IUnitOfWork>();
-
-        var userContextMock = Substitute.For<IUserContext>();
-        _tenantId = Guid.CreateVersion7();
-        userContextMock.TenantId.Returns(_tenantId);
-
-        _handler = new DeleteDriverCommandHandler(
-            _driverRepositoryMock,
-            userContextMock,
-            _unitOfWorkMock);
-    }
-
     [Fact]
     public async Task Handle_WhenValid_ShouldDeleteDriverAndCommits()
     {
-        var driver = Driver.Create(_tenantId, Guid.CreateVersion7(), "D-01", "Driver", "123", "345", DateOnly.MaxValue);
+        var driver = Driver.Create(
+            UserContext.TenantId,
+            Guid.CreateVersion7(),
+            "D-01",
+            "Driver",
+            "123",
+            "345",
+            DateOnly.MaxValue);
+
+        await DbContext.Drivers.AddAsync(driver);
+        await DbContext.SaveChangesAsync();
 
         var command = new DeleteDriverCommand(driver.Id);
 
-        _driverRepositoryMock
-            .GetByIdAsync(driver.Id, Arg.Any<CancellationToken>())
-            .Returns(driver);
+        await Sender.Send(command, CancellationToken.None);
 
-        await _handler.Handle(command, CancellationToken.None);
-
-        _driverRepositoryMock.Received(1).Remove(driver);
-
-        await _unitOfWorkMock.Received(1).CommitAsync(Arg.Any<CancellationToken>());
+        var result = await DbContext.Drivers.FirstOrDefaultAsync(p => p.Id == driver.Id);
+        result.Should().BeNull();
     }
 
     [Fact]
-    public async Task Handle_WhenFacilityDontExist_ShouldThrow()
+    public async Task Handle_WhenDriverDontExist_ShouldThrow()
     {
         var id = Guid.CreateVersion7();
 
-        _driverRepositoryMock
-            .GetByIdAsync(id, Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult<Driver?>(null));
-
-        var act = async () => await _handler.Handle(new DeleteDriverCommand(id), CancellationToken.None);
+        var act = async () => await Sender.Send(new DeleteDriverCommand(id));
 
         await act.Should().ThrowAsync<NotFoundException>()
             .WithMessage("*Driver don't exist*");

@@ -1,94 +1,91 @@
 using FluentAssertions;
-using LogiPulse.Application.Interfaces;
 using LogiPulse.Application.Tenants.Commands.RegisterTenant;
-using LogiPulse.Domain.Entities.Tenants;
-using LogiPulse.Domain.Entities.Users;
 using LogiPulse.Domain.Exceptions;
 using LogiPulse.Domain.Shared;
-using NSubstitute;
+using Logipulse.IntegrationTests.Setup;
+using Microsoft.EntityFrameworkCore;
 
 namespace LogiPulse.IntegrationTests.Tenants.Commands.RegisterTenant;
 
-public class RegisterTenantCommandHandlerTests
+public class RegisterTenantCommandHandlerTests(IntegrationTestWebAppFactory factory) : BaseIntegrationTest(factory)
 {
-    private readonly IUserRepository _userRepositoryMock;
-    private readonly ITenantRepository _tenantRepositoryMock;
-    private readonly IUnitOfWork _unitOfWorkMock;
-    private readonly RegisterTenantCommandHandler _handler;
-    private readonly RegisterTenantCommand _command;
-
-    public RegisterTenantCommandHandlerTests()
+    private readonly RegisterTenantCommand _command = new()
     {
-        _userRepositoryMock = Substitute.For<IUserRepository>();
-        _tenantRepositoryMock = Substitute.For<ITenantRepository>();
-        _unitOfWorkMock = Substitute.For<IUnitOfWork>();
+        TaxCode = Guid.NewGuid().ToString()[0..20],
+        DisplayName = "LogiPulse",
+        AdminUserEntraId = Guid.NewGuid(),
+        AdminUserEmail = "registertest@mail.com",
+        AdminUserName = "admin"
+    };
 
-        _handler = new RegisterTenantCommandHandler(
-            _userRepositoryMock,
-            _tenantRepositoryMock,
-            _unitOfWorkMock
-        );
-
-        _command = new RegisterTenantCommand
-        {
-            TaxCode = "1234",
-            DisplayName = "LogiPulse",
-            AdminUserEntraId = Guid.NewGuid(),
-            AdminUserEmail = "admin@mail.com",
-            AdminUserName = "admin"
-        };
-    }
 
     [Fact]
     public async Task Handle_ShouldCreateTenantAndUser()
     {
-        Tenant? capturedTenant = null;
-        User? capturedUser = null;
-
-        _tenantRepositoryMock
-            .When(x => x.AddAsync(Arg.Any<Tenant>()))
-            .Do(callInfo => capturedTenant = callInfo.Arg<Tenant>());
-
-        _userRepositoryMock
-            .When(x => x.AddAsync(Arg.Any<User>()))
-            .Do(callInfo => capturedUser = callInfo.Arg<User>());
-
-        var result = await _handler.Handle(_command, CancellationToken.None);
+        var result = await Sender.Send(_command, CancellationToken.None);
         result.Should().NotBeEmpty();
 
-        capturedTenant.Should().NotBeNull();
-        capturedTenant!.TaxCode.Should().Be(_command.TaxCode);
-        capturedTenant!.DisplayName.Should().Be(_command.DisplayName);
+        var tenant = await DbContext.Tenants.IgnoreQueryFilters()
+            .FirstOrDefaultAsync(t => t.TaxCode == _command.TaxCode);
 
-        capturedUser.Should().NotBeNull();
-        capturedUser!.EntraId.Should().Be(_command.AdminUserEntraId);
-        capturedUser!.Email.Should().Be(Email.Create(_command.AdminUserEmail));
-        capturedUser!.FullName.Should().Be(_command.AdminUserName);
+        var user = await DbContext.Users.IgnoreQueryFilters()
+            .FirstOrDefaultAsync(u => u.EntraId == _command.AdminUserEntraId);
 
-        await _unitOfWorkMock.Received(1).CommitAsync(Arg.Any<CancellationToken>());
+        tenant.Should().NotBeNull();
+        tenant!.TaxCode.Should().Be(_command.TaxCode);
+        tenant!.DisplayName.Should().Be(_command.DisplayName);
+
+        user.Should().NotBeNull();
+        user!.EntraId.Should().Be(_command.AdminUserEntraId);
+        user!.Email.Should().Be(Email.Create(_command.AdminUserEmail));
+        user!.FullName.Should().Be(_command.AdminUserName);
     }
 
     [Fact]
     public async Task Handle_ExistingTenant_ShouldThrow()
     {
-        _tenantRepositoryMock
-            .ExistsByTaxCodeAsync(_command.TaxCode)
-            .Returns(true);
+        RegisterTenantCommand command = new()
+        {
+            TaxCode = Guid.NewGuid().ToString()[0..20],
+            DisplayName = "LogiPulse",
+            AdminUserEntraId = Guid.NewGuid(),
+            AdminUserEmail = "Handle_ExistingTenant_ShouldThrow@mail.com",
+            AdminUserName = "admin"
+        };
 
-        Func<Task> act = async () => await _handler.Handle(_command, CancellationToken.None);
+        await Sender.Send(command);
 
-        await act.Should().ThrowAsync<ConflictException>().WithMessage("Tenant already exists");
+        Func<Task> act = async () => await Sender.Send(command);
+
+        await act.Should().ThrowAsync<ConflictException>().WithMessage("*Tenant already exists*");
     }
 
     [Fact]
     public async Task Handle_ExistingUser_ShouldThrow()
     {
-        _userRepositoryMock
-            .ExistsByEmailAsync(Email.Create(_command.AdminUserEmail))
-            .Returns(true);
+        RegisterTenantCommand command = new()
+        {
+            TaxCode = Guid.NewGuid().ToString()[0..20],
+            DisplayName = "LogiPulse",
+            AdminUserEntraId = Guid.NewGuid(),
+            AdminUserEmail = "Handle_ExistingUser_ShouldThrow@mail.com",
+            AdminUserName = "admin"
+        };
 
-        Func<Task> act = async () => await _handler.Handle(_command, CancellationToken.None);
+        await Sender.Send(command);
 
-        await act.Should().ThrowAsync<ConflictException>().WithMessage("User already exists and belongs to a tenant");
+        RegisterTenantCommand command2 = new()
+        {
+            TaxCode = Guid.NewGuid().ToString()[0..20],
+            DisplayName = "LogiPulse",
+            AdminUserEntraId = Guid.NewGuid(),
+            AdminUserEmail = "Handle_ExistingUser_ShouldThrow@mail.com",
+            AdminUserName = "admin"
+        };
+
+
+        Func<Task> act = async () => await Sender.Send(command2);
+
+        await act.Should().ThrowAsync<ConflictException>().WithMessage("*User already exists and belongs to a tenant*");
     }
 }

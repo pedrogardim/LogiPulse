@@ -1,36 +1,21 @@
 using FluentAssertions;
-using LogiPulse.Application.Common;
 using LogiPulse.Application.Facilities.Commands.CreateFacility;
-using LogiPulse.Application.Interfaces;
 using LogiPulse.Domain.Entities.Facilities;
 using LogiPulse.Domain.Exceptions;
 using LogiPulse.Domain.Shared;
-using NSubstitute;
+using Logipulse.IntegrationTests.Setup;
+using Microsoft.EntityFrameworkCore;
 
 namespace LogiPulse.IntegrationTests.Facilities.Commands.CreateFacility;
 
-public class CreateFacilityCommandHandlerTests
+public class CreateFacilityCommandHandlerTests(IntegrationTestWebAppFactory factory) : BaseIntegrationTest(factory)
 {
-    private readonly IFacilityRepository _facilityRepositoryMock;
-    private readonly IUnitOfWork _unitOfWorkMock;
-    private readonly CreateFacilityCommandHandler _handler;
-    private readonly CreateFacilityCommand _command;
-    private readonly Guid _tenantId;
+    private readonly Address _address = new("X", "X", "X", "X", "X", "X", "X");
 
-    public CreateFacilityCommandHandlerTests()
+    [Fact]
+    public async Task Handle_ShouldCreateFacility()
     {
-        _facilityRepositoryMock = Substitute.For<IFacilityRepository>();
-        _unitOfWorkMock = Substitute.For<IUnitOfWork>();
-
-        var userContextMock = Substitute.For<IUserContext>();
-        _tenantId = Guid.CreateVersion7();
-        userContextMock.TenantId.Returns(_tenantId);
-
-        _handler = new CreateFacilityCommandHandler(_facilityRepositoryMock, userContextMock, _unitOfWorkMock);
-
-        var address = new Address("Rod. Hélio Smidt", "s/n", "Guarulhos", "SP", "07190-100", "Brazil", "Aeroporto");
-
-        _command = new CreateFacilityCommand
+        var command = new CreateFacilityCommand
         {
             ExternalId = "F-00001",
             Name = "Westroot Warehouse",
@@ -38,50 +23,56 @@ public class CreateFacilityCommandHandlerTests
             FacilityType = FacilityType.DistributionCenter,
             Latitude = 30,
             Longitude = 10,
-            Address = address
+            Address = _address
         };
-    }
 
-    [Fact]
-    public async Task Handle_ShouldCreateFacility()
-    {
-        Facility? capturedFacility = null;
+        var facilityId = await Sender.Send(command, CancellationToken.None);
+        facilityId.Should().NotBeEmpty();
 
-        _facilityRepositoryMock
-            .When(x => x.AddAsync(Arg.Any<Facility>(), CancellationToken.None))
-            .Do(callInfo => capturedFacility = callInfo.Arg<Facility>());
+        var facility = await DbContext.Facilities.FirstOrDefaultAsync(d => d.Id == facilityId);
+        facility.Should().NotBeNull();
 
-        var result = await _handler.Handle(_command, CancellationToken.None);
-        result.Should().NotBeEmpty();
+        facility!.TenantId.Should().Be(UserContext.TenantId);
+        facility!.ExternalId.Should().Be(command.ExternalId);
+        facility!.Name.Should().Be(command.Name);
+        facility!.Code.Should().Be(command.Code);
 
-        capturedFacility!.TenantId.Should().Be(_tenantId);
-        capturedFacility!.ExternalId.Should().Be(_command.ExternalId);
-        capturedFacility!.Name.Should().Be(_command.Name);
-        capturedFacility!.Code.Should().Be(_command.Code);
+        facility!.Type.Should().Be(command.FacilityType);
 
-        capturedFacility!.Type.Should().Be(_command.FacilityType);
+        facility!.Location.X.Should().Be(command.Longitude);
+        facility!.Location.Y.Should().Be(command.Latitude);
 
-        capturedFacility!.Location.X.Should().Be(_command.Longitude);
-        capturedFacility!.Location.Y.Should().Be(_command.Latitude);
-
-        capturedFacility!.Address.Should().Be(_command.Address);
-
-        capturedFacility.Should().NotBeNull();
-
-        await _facilityRepositoryMock.Received(1)
-            .AddAsync(Arg.Any<Facility>(), Arg.Any<CancellationToken>());
-
-        await _unitOfWorkMock.Received(1).CommitAsync(Arg.Any<CancellationToken>());
+        facility!.Address.Should().Be(command.Address);
     }
 
     [Fact]
     public async Task Handle_WhenFacilityAlreadyExistsWithSameExternalId_ShouldThrow()
     {
-        _facilityRepositoryMock
-            .ExistsByExternalIdAsync(_command.ExternalId, CancellationToken.None)
-            .Returns(true);
+        var command = new CreateFacilityCommand
+        {
+            ExternalId = Guid.NewGuid().ToString()[0..20],
+            Name = "Some Facility",
+            Code = Guid.NewGuid().ToString()[0..10],
+            FacilityType = FacilityType.DeliveryPoint,
+            Latitude = 30,
+            Longitude = 10,
+            Address = _address
+        };
 
-        Func<Task> act = async () => await _handler.Handle(_command, CancellationToken.None);
+        await Sender.Send(command);
+
+        var command2 = new CreateFacilityCommand
+        {
+            ExternalId = command.ExternalId,
+            Name = "Some Facility",
+            Code = Guid.NewGuid().ToString()[0..10],
+            FacilityType = FacilityType.DeliveryPoint,
+            Latitude = 30,
+            Longitude = 10,
+            Address = _address
+        };
+
+        Func<Task> act = async () => await Sender.Send(command2);
 
         await act.Should().ThrowAsync<ConflictException>()
             .WithMessage("*A facility with that external id already exists*");
@@ -90,11 +81,31 @@ public class CreateFacilityCommandHandlerTests
     [Fact]
     public async Task Handle_WhenFacilityAlreadyExistsWithSameCode_ShouldThrow()
     {
-        _facilityRepositoryMock
-            .ExistsByCodeAsync(_command.Code, CancellationToken.None)
-            .Returns(true);
+        var command = new CreateFacilityCommand
+        {
+            ExternalId = Guid.NewGuid().ToString()[0..20],
+            Name = "Some Facility",
+            Code = Guid.NewGuid().ToString()[0..10],
+            FacilityType = FacilityType.DeliveryPoint,
+            Latitude = 30,
+            Longitude = 10,
+            Address = _address
+        };
 
-        Func<Task> act = async () => await _handler.Handle(_command, CancellationToken.None);
+        await Sender.Send(command);
+
+        var command2 = new CreateFacilityCommand
+        {
+            ExternalId = Guid.NewGuid().ToString()[0..20],
+            Name = "Some Facility",
+            Code = command.Code,
+            FacilityType = FacilityType.DeliveryPoint,
+            Latitude = 30,
+            Longitude = 10,
+            Address = _address
+        };
+
+        Func<Task> act = async () => await Sender.Send(command2);
 
         await act.Should().ThrowAsync<ConflictException>().WithMessage("*A facility with that code already exists*");
     }

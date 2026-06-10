@@ -2,49 +2,34 @@ using FluentAssertions;
 using LogiPulse.Application.Facilities.Queries.ListFacilities;
 using LogiPulse.Domain.Entities.Facilities;
 using LogiPulse.Domain.Shared;
+using Logipulse.IntegrationTests.Setup;
 using NetTopologySuite.Geometries;
-using NSubstitute;
 
 namespace LogiPulse.IntegrationTests.Facilities.Queries.ListFacilities;
 
-public class ListFacilitiesQueryHandlerTests
+public class ListFacilitiesQueryHandlerTests(IntegrationTestWebAppFactory factory) : BaseIntegrationTest(factory)
 {
-    private readonly IFacilityRepository _facilityRepositoryMock;
-    private readonly ListFacilitiesQueryHandler _handler;
-    private readonly ListFacilitiesQuery _query;
-
-    public ListFacilitiesQueryHandlerTests()
-    {
-        _facilityRepositoryMock = Substitute.For<IFacilityRepository>();
-
-        _handler = new ListFacilitiesQueryHandler(_facilityRepositoryMock);
-
-        _query = new ListFacilitiesQuery(
-            FacilityType.DeliveryPoint,
-            "Some Facility",
-            1,
-            20
-        );
-    }
-
     [Fact]
     public async Task Handle_ShouldReturnFacilityItems()
     {
-        var facility = Facility.Create(Guid.CreateVersion7(), "D-01", "Facility", "123", FacilityType.DeliveryPoint,
-            new Address("", "", "", "", "", "", ""), new Point(0, 0));
+        var facility = Facility.Create(
+            UserContext.TenantId,
+            "D-01",
+            Guid.NewGuid().ToString()[0..20],
+            Guid.NewGuid().ToString()[0..8],
+            FacilityType.DeliveryPoint,
+            new Address("", "", "", "", "", "", ""),
+            new Point(0, 0));
 
-        IReadOnlyList<Facility> facilities = [facility];
+        await DbContext.Facilities.AddAsync(facility);
+        await DbContext.SaveChangesAsync();
 
-        _facilityRepositoryMock.ListAsync(
-                _query.FacilityType,
-                _query.Search,
-                _query.Page,
-                _query.PageSize,
-                Arg.Any<CancellationToken>()
-            )
-            .Returns(facilities);
+        var query = new ListFacilitiesQuery(
+            FacilityType.DeliveryPoint,
+            facility.Name
+        );
 
-        var result = await _handler.Handle(_query, CancellationToken.None);
+        var result = await Sender.Send(query, CancellationToken.None);
 
         result.Should().BeOfType<List<ListFacilitiesItemResponse>>();
 
@@ -57,13 +42,5 @@ public class ListFacilitiesQueryHandlerTests
         result[0].Type.Should().Be(facility.Type);
         result[0].City.Should().Be(facility.Address.City);
         result[0].State.Should().Be(facility.Address.State);
-
-        await _facilityRepositoryMock.Received(1).ListAsync(
-            _query.FacilityType,
-            _query.Search,
-            _query.Page,
-            _query.PageSize,
-            Arg.Any<CancellationToken>()
-        );
     }
 }

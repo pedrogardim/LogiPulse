@@ -1,82 +1,65 @@
 using FluentAssertions;
-using LogiPulse.Application.Common;
-using LogiPulse.Application.Interfaces;
 using LogiPulse.Application.Products.Commands.CreateProduct;
 using LogiPulse.Domain.Entities.Products;
 using LogiPulse.Domain.Exceptions;
-using NSubstitute;
+using Logipulse.IntegrationTests.Setup;
+using Microsoft.EntityFrameworkCore;
 
 namespace LogiPulse.IntegrationTests.Products.Commands.CreateProduct;
 
-public class CreateProductCommandHandlerTests
+public class CreateProductCommandHandlerTests(IntegrationTestWebAppFactory factory) : BaseIntegrationTest(factory)
 {
-    private readonly IProductRepository _productRepositoryMock;
-    private readonly IUnitOfWork _unitOfWorkMock;
-    private readonly CreateProductCommandHandler _handler;
-    private readonly CreateProductCommand _command;
-    private readonly Guid _tenantId = Guid.CreateVersion7();
     private readonly ProductRequirement _productRequirement = new("TEMP", "C", 2, 4);
-
-    public CreateProductCommandHandlerTests()
-    {
-        _productRepositoryMock = Substitute.For<IProductRepository>();
-        _unitOfWorkMock = Substitute.For<IUnitOfWork>();
-
-        var userContextMock = Substitute.For<IUserContext>();
-        userContextMock.TenantId.Returns(_tenantId);
-
-        _handler = new CreateProductCommandHandler(_productRepositoryMock, userContextMock,
-            _unitOfWorkMock);
-
-        _command = new CreateProductCommand
-        {
-            ExternalId = "F-00001",
-            Name = "Westroot Warehouse",
-            Code = "2039",
-            CategoryId = Guid.CreateVersion7(),
-            ProductRequirements = [_productRequirement]
-        };
-    }
 
     [Fact]
     public async Task Handle_ShouldCreateProduct()
     {
-        Product? product = null;
+        var command = new CreateProductCommand
+        {
+            ExternalId = Guid.CreateVersion7().ToString()[0..20],
+            Name = "Some Product",
+            Code = Guid.CreateVersion7().ToString()[0..10],
+            ProductRequirements = [_productRequirement]
+        };
 
-        _productRepositoryMock
-            .When(x => x.AddAsync(Arg.Any<Product>(), CancellationToken.None))
-            .Do(callInfo => product = callInfo.Arg<Product>());
+        var productId = await Sender.Send(command, CancellationToken.None);
+        productId.Should().NotBeEmpty();
 
-        var result = await _handler.Handle(_command, CancellationToken.None);
-        result.Should().NotBeEmpty();
+        var product = await DbContext.Products.FirstOrDefaultAsync(d => d.Id == productId);
+        product.Should().NotBeNull();
 
-        product!.TenantId.Should().Be(_tenantId);
-        product!.ExternalId.Should().Be(_command.ExternalId);
-        product!.Name.Should().Be(_command.Name);
-        product!.Code.Should().Be(_command.Code);
-        product!.CategoryId.Should().Be(_command.CategoryId);
+        product!.TenantId.Should().Be(UserContext.TenantId);
+        product!.ExternalId.Should().Be(command.ExternalId);
+        product!.Name.Should().Be(command.Name);
+        product!.Code.Should().Be(command.Code);
+        product!.CategoryId.Should().Be(command.CategoryId);
 
         product!.Requirements.First().RuleUnit.Should().Be(_productRequirement.RuleUnit);
         product!.Requirements.First().Metric.Should().Be(_productRequirement.Metric);
         product!.Requirements.First().Min.Should().Be(_productRequirement.Min);
         product!.Requirements.First().Max.Should().Be(_productRequirement.Max);
-
-        product.Should().NotBeNull();
-
-        await _productRepositoryMock.Received(1)
-            .AddAsync(Arg.Any<Product>(), Arg.Any<CancellationToken>());
-
-        await _unitOfWorkMock.Received(1).CommitAsync(Arg.Any<CancellationToken>());
     }
 
     [Fact]
     public async Task Handle_WhenProductAlreadyExistsWithSameExternalId_ShouldThrow()
     {
-        _productRepositoryMock
-            .ExistsByExternalIdAsync(_command.ExternalId, CancellationToken.None)
-            .Returns(true);
+        var command = new CreateProductCommand
+        {
+            ExternalId = Guid.NewGuid().ToString()[0..20],
+            Name = "Some Product",
+            Code = Guid.NewGuid().ToString()[0..10]
+        };
 
-        Func<Task> act = async () => await _handler.Handle(_command, CancellationToken.None);
+        await Sender.Send(command);
+
+        var command2 = new CreateProductCommand
+        {
+            ExternalId = command.ExternalId,
+            Name = "Some Product",
+            Code = Guid.NewGuid().ToString()[0..10]
+        };
+
+        Func<Task> act = async () => await Sender.Send(command2);
 
         await act.Should().ThrowAsync<ConflictException>()
             .WithMessage("*A product with that external id already exists*");
@@ -85,11 +68,23 @@ public class CreateProductCommandHandlerTests
     [Fact]
     public async Task Handle_WhenProductAlreadyExistsWithSameCode_ShouldThrow()
     {
-        _productRepositoryMock
-            .ExistsByCodeAsync(_command.Code, CancellationToken.None)
-            .Returns(true);
+        var command = new CreateProductCommand
+        {
+            ExternalId = Guid.NewGuid().ToString()[0..20],
+            Name = "Some Product",
+            Code = Guid.NewGuid().ToString()[0..10]
+        };
 
-        Func<Task> act = async () => await _handler.Handle(_command, CancellationToken.None);
+        await Sender.Send(command);
+
+        var command2 = new CreateProductCommand
+        {
+            ExternalId = Guid.NewGuid().ToString()[0..20],
+            Name = "Some Product",
+            Code = command.Code
+        };
+
+        Func<Task> act = async () => await Sender.Send(command2);
 
         await act.Should().ThrowAsync<ConflictException>()
             .WithMessage("*A product with that code already exists*");
