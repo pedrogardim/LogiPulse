@@ -9,9 +9,9 @@ public class TenantRepository(LogiPulseDbContext context) : ITenantRepository
     {
         await context.Tenants.AddAsync(tenant);
     }
-    
-    public async Task<bool> ExistsByTaxCodeAsync(string taxCode)
+
+    public async Task<bool> ExistsByTaxCodeWithoutTenantFilterAsync(string taxCode)
     {
-        return await context.Tenants.AnyAsync(t => t.TaxCode == taxCode);
+        return await context.Tenants.IgnoreQueryFilters().AnyAsync(t => t.TaxCode == taxCode);
     }
 }
