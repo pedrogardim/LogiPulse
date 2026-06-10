@@ -1,12 +1,9 @@
 using FluentAssertions;
-using LogiPulse.Application.Common;
 using LogiPulse.Application.Drivers.Commands.DeleteDriver;
-using LogiPulse.Application.Interfaces;
 using LogiPulse.Domain.Entities.Drivers;
 using LogiPulse.Domain.Exceptions;
 using Logipulse.IntegrationTests.Setup;
 using Microsoft.EntityFrameworkCore;
-using NSubstitute;
 
 namespace LogiPulse.IntegrationTests.Drivers.Commands.DeleteDriver;
 
@@ -17,7 +14,7 @@ public class DeleteDriverCommandHandlerTests(IntegrationTestWebAppFactory factor
     {
         var driver = Driver.Create(
             UserContext.TenantId,
-            Guid.CreateVersion7(),
+            UserContext.UserId,
             "D-01",
             "Driver",
             "123",
