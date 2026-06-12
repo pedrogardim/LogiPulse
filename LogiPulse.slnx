@@ -6,4 +6,6 @@
   <Project Path="LogiPulse.Domain/LogiPulse.Domain.csproj" />
   <Project Path="LogiPulse.Infrastructure/LogiPulse.Infrastructure.csproj" />
   <Project Path="Logipulse.IntegrationTests/Logipulse.IntegrationTests.csproj" />
+  <Project Path="LogiPulse.Worker.Tests/LogiPulse.Worker.Tests.csproj" />
+  <Project Path="LogiPulse.Worker/LogiPulse.Worker.csproj" />
 </Solution>

@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <UserSecretsId>dotnet-LogiPulse.Worker-50390702-9909-4f30-95e3-94bf840e2608</UserSecretsId>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.3"/>
+    </ItemGroup>
+    
+    <ItemGroup>
+        <ProjectReference Include="..\LogiPulse.Domain\LogiPulse.Domain.csproj"/>
+        <ProjectReference Include="..\LogiPulse.Infrastructure\LogiPulse.Infrastructure.csproj"/>
+        <ProjectReference Include="..\LogiPulse.Application\LogiPulse.Application.csproj"/>
+    </ItemGroup>
+</Project>
