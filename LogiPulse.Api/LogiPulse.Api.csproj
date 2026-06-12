@@ -1,26 +1,25 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>6b17e819-1744-4ea2-afc6-0854ef45838d</UserSecretsId>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <UserSecretsId>6b17e819-1744-4ea2-afc6-0854ef45838d</UserSecretsId>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="EFCore.NamingConventions" Version="10.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.3" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.5">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.Identity.Web" Version="4.7.0" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.3"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.5">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.Identity.Web" Version="4.7.0"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\LogiPulse.Domain\LogiPulse.Domain.csproj" />
-    <ProjectReference Include="..\LogiPulse.Infrastructure\LogiPulse.Infrastructure.csproj" />
-    <ProjectReference Include="..\LogiPulse.Application\LogiPulse.Application.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\LogiPulse.Domain\LogiPulse.Domain.csproj"/>
+        <ProjectReference Include="..\LogiPulse.Infrastructure\LogiPulse.Infrastructure.csproj"/>
+        <ProjectReference Include="..\LogiPulse.Application\LogiPulse.Application.csproj"/>
+    </ItemGroup>
 
 </Project>
