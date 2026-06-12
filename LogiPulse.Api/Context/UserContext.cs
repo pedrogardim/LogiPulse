@@ -9,6 +9,7 @@ public class UserContext : IUserContext
     public Guid TenantId { get; private set; }
     public Email? Email { get; private set; } = null;
     public bool IsAuthenticated { get; private set; }
+    public bool BypassTenantFilter => false;
 
     public void SetUser(Guid userId, Guid tenantId, string email)
     {

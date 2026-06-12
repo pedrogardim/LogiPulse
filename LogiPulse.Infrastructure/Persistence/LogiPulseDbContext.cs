@@ -29,29 +29,32 @@ public class LogiPulseDbContext(DbContextOptions<LogiPulseDbContext> options, IU
 
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<Dispatch>()
-            .HasQueryFilter(d => d.TenantId == userContext.TenantId);
+        if (!userContext.BypassTenantFilter)
+        {
+            modelBuilder.Entity<Dispatch>()
+                .HasQueryFilter(d => d.TenantId == userContext.TenantId);
 
-        modelBuilder.Entity<Product>()
-            .HasQueryFilter(p => p.TenantId == userContext.TenantId);
+            modelBuilder.Entity<Product>()
+                .HasQueryFilter(p => p.TenantId == userContext.TenantId);
 
-        modelBuilder.Entity<ProductCategory>()
-            .HasQueryFilter(pc => pc.TenantId == userContext.TenantId);
+            modelBuilder.Entity<ProductCategory>()
+                .HasQueryFilter(pc => pc.TenantId == userContext.TenantId);
 
-        modelBuilder.Entity<Tenant>()
-            .HasQueryFilter(t => t.Id == userContext.TenantId);
+            modelBuilder.Entity<Tenant>()
+                .HasQueryFilter(t => t.Id == userContext.TenantId);
 
-        modelBuilder.Entity<User>()
-            .HasQueryFilter(u => u.TenantId == userContext.TenantId);
+            modelBuilder.Entity<User>()
+                .HasQueryFilter(u => u.TenantId == userContext.TenantId);
 
-        modelBuilder.Entity<Facility>()
-            .HasQueryFilter(f => f.TenantId == userContext.TenantId);
+            modelBuilder.Entity<Facility>()
+                .HasQueryFilter(f => f.TenantId == userContext.TenantId);
 
-        modelBuilder.Entity<Vehicle>()
-            .HasQueryFilter(v => v.TenantId == userContext.TenantId);
+            modelBuilder.Entity<Vehicle>()
+                .HasQueryFilter(v => v.TenantId == userContext.TenantId);
 
-        modelBuilder.Entity<Driver>()
-            .HasQueryFilter(d => d.TenantId == userContext.TenantId);
+            modelBuilder.Entity<Driver>()
+                .HasQueryFilter(d => d.TenantId == userContext.TenantId);
+        }
 
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(LogiPulseDbContext).Assembly);
     }

@@ -8,6 +8,7 @@ public interface IUserContext
     Guid TenantId { get; }
     Email Email { get; }
     bool IsAuthenticated { get; }
+    bool BypassTenantFilter { get; }
 
     public void SetUser(Guid userId, Guid tenantId, string email);
 }
